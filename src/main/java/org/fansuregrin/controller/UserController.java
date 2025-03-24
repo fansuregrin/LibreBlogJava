@@ -1,0 +1,111 @@
+package org.fansuregrin.controller;
+
+import org.fansuregrin.entity.ApiResponse;
+import org.fansuregrin.entity.PageResult;
+import org.fansuregrin.entity.User;
+import org.fansuregrin.entity.UserQuery;
+import org.fansuregrin.service.UserService;
+import org.fansuregrin.validation.ValidateGroup;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RequestMapping("/user")
+@RestController
+public class UserController {
+
+    private final UserService userService;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(
+        @RequestBody @Validated(ValidateGroup.Crud.Query.Login.class) User user) {
+        String token = userService.login(user);
+        if (token != null) {
+            return ResponseEntity.ok(ApiResponse.success("登录成功", token));
+        } else {
+            return ResponseEntity.badRequest()
+                .body(ApiResponse.error("用户名或密码错误"));
+        }
+    }
+
+    @PostMapping("/register")
+    public ApiResponse register(
+        @RequestBody @Validated(ValidateGroup.Crud.Create.class) User user) {
+        userService.register(user);
+        return ApiResponse.success("注册成功", null);
+    }
+
+    @GetMapping("/me")
+    public ApiResponse getGeneralInfo() {
+        User user = userService.getSelfGeneralInfo();
+        return ApiResponse.success(user);
+    }
+
+    @PatchMapping("/me")
+    public ApiResponse updateSelfGeneralInfo(
+        @RequestBody @Validated(ValidateGroup.Crud.Update.GeneralInfo.Self.class)
+        User user
+    ) {
+        userService.updateSelfGeneralInfo(user);
+        return ApiResponse.success();
+    }
+
+    @PatchMapping("/me/password")
+    public ApiResponse updateSelfPassword(
+        @RequestBody @Validated(ValidateGroup.Crud.Update.Password.Self.class)
+        User user
+    ) {
+        userService.updateSelfPassword(user);
+        return ApiResponse.success();
+    }
+
+    @GetMapping("/list")
+    public ApiResponse list(UserQuery query) {
+        PageResult<User> data = userService.list(query);
+        return ApiResponse.success(data);
+    }
+
+    @GetMapping("/{id}")
+    public ApiResponse getGeneralInfo(@PathVariable int id) {
+        User data = userService.getGeneralInfo(id);
+        return ApiResponse.success(data);
+    }
+
+    @PostMapping
+    public ApiResponse add(
+        @RequestBody @Validated(ValidateGroup.Crud.Create.class) User user) {
+        userService.add(user);
+        return ApiResponse.success("添加成功", null);
+    }
+
+    @PatchMapping
+    public ApiResponse updateGeneralInfo(
+        @RequestBody @Validated(ValidateGroup.Crud.Update.GeneralInfo.Other.class)
+        User user
+    ) {
+        userService.updateGeneralInfo(user);
+        return ApiResponse.success("更新成功", null);
+    }
+
+    @PatchMapping("/password")
+    public ApiResponse updatePassword(
+        @RequestBody @Validated(ValidateGroup.Crud.Update.Password.Other.class)
+        User user
+    ) {
+        userService.updatePassword(user);
+        return ApiResponse.success("更新成功", null);
+    }
+
+    @DeleteMapping
+    public ApiResponse delete(@RequestBody List<Integer> ids) {
+        userService.delete(ids);
+        return ApiResponse.success("删除成功", null);
+    }
+
+}

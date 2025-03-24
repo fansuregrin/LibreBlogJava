@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.fansuregrin.mapper.TagMapper">
+  <sql id="selectCommonFields">
+    SELECT id,name,slug,create_time,modify_time FROM tag
+  </sql>
+  <select id="selectAll" resultType="org.fansuregrin.entity.Tag">
+    <include refid="selectCommonFields"/> WHERE delete_flag = '0'
+    ORDER BY modify_time DESC
+  </select>
+  <select id="select" resultType="org.fansuregrin.entity.Tag">
+    <include refid="selectCommonFields"/>
+    WHERE delete_flag = '0' AND id = #{id}
+  </select>
+  <select id="selectBySlug" resultType="org.fansuregrin.entity.Tag">
+    <include refid="selectCommonFields"/>
+    WHERE delete_flag = '0' AND slug = #{slug}
+  </select>
+  <select id="selectLimit" resultType="org.fansuregrin.entity.Tag">
+    <include refid="selectCommonFields"/>
+    WHERE delete_flag = '0'
+    <if test="slug != null and slug != ''">AND slug LIKE CONCAT('%', #{slug}, '%')</if>
+    <if test="name != null and name != ''">AND name LIKE CONCAT('%', #{name}, '%')</if>
+    ORDER BY modify_time LIMIT #{start},#{pageSize}
+  </select>
+  <select id="count" resultType="int">
+    SELECT COUNT(*) FROM tag
+    WHERE delete_flag = '0'
+    <if test="slug != null and slug != ''">AND slug LIKE CONCAT('%', #{slug}, '%')</if>
+    <if test="name != null and name != ''">AND name LIKE CONCAT('%', #{name}, '%')</if>
+  </select>
+  <insert id="insert">
+    INSERT INTO tag (name, slug, create_time, modify_time)
+      VALUE (#{name}, #{slug}, NOW(), NOW())
+  </insert>
+  <update id="update">
+    UPDATE tag SET modify_time = NOW()
+    <if test="slug != null and slug != ''">,slug = #{slug}</if>
+    <if test="name != null and name != ''">,name = #{name}</if>
+    WHERE delete_flag = '0' AND id > 1 AND id = #{id}
+  </update>
+  <update id="delete">
+    UPDATE tag SET delete_flag = '1' WHERE id > 1 AND id IN
+    <foreach collection="ids" index="index" item="item" open="(" close=")" separator=",">
+      #{item}
+    </foreach>
+  </update>
+</mapper>

@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: LibreBlog
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3307/libre_blog
+    username: fansuregrin
+    password: Fg12345#
+mybatis:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
+logging:
+  level:
+    org.fansuregrin: debug
+jwt:
+  expires-in: 3600000
+  secret: 7c8c525f-68f8-4647-894c-35daabe3f00b

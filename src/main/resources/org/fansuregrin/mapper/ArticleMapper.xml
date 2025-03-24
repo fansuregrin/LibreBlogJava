@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.fansuregrin.mapper.ArticleMapper">
+  <resultMap id="articleResult" type="org.fansuregrin.entity.Article">
+    <id property="id" column="id"/>
+    <result property="authorId" column="author_id"/>
+    <result property="categoryId" column="category_id"/>
+    <result property="title" column="title"/>
+    <result property="excerpt" column="excerpt"/>
+    <result property="content" column="content"/>
+    <result property="createTime" column="create_time"/>
+    <result property="modifyTime" column="modify_time"/>
+    <association property="author" javaType="org.fansuregrin.entity.User" resultMap="userResult"/>
+    <association property="category" javaType="org.fansuregrin.entity.Category" resultMap="categoryResult"/>
+    <collection property="tags" ofType="org.fansuregrin.entity.Tag" resultMap="tagResult"/>
+  </resultMap>
+  <resultMap id="userResult" type="org.fansuregrin.entity.User">
+    <id property="id" column="user_id"/>
+    <result property="username" column="user_username"/>
+    <result property="realname" column="user_realname"/>
+  </resultMap>
+  <resultMap id="categoryResult" type="org.fansuregrin.entity.Category">
+    <id property="id" column="category_id"/>
+    <result property="slug" column="category_slug"/>
+    <result property="name" column="category_name"/>
+  </resultMap>
+  <resultMap id="tagResult" type="org.fansuregrin.entity.Tag">
+    <id property="id" column="tag_id"/>
+    <result property="slug" column="tag_slug"/>
+    <result property="name" column="tag_name"/>
+  </resultMap>
+  <sql id="filterJoin">
+    <if test="authorId != null and authorId > 0">
+      JOIN user u1 ON a1.author_id = u1.id AND u1.id = #{authorId}
+    </if>
+    <if test="categorySlug != null and categorySlug != ''">
+      JOIN category c1 ON a1.category_id = c1.id AND c1.slug = #{categorySlug}
+    </if>
+    <if test="tagSlug != null and tagSlug != ''">
+      JOIN article_tag at1 ON a1.id = at1.article
+      JOIN tag t1 ON at1.tag = t1.id AND t1.slug = #{tagSlug}
+    </if>
+  </sql>
+  <sql id="selectArticleIds">
+    SELECT a1.id FROM article a1 <include refid="filterJoin"/> WHERE delete_flag = '0'
+    ORDER BY a1.modify_time DESC LIMIT #{start},#{pageSize}
+  </sql>
+  <select id="count" resultType="integer">
+    SELECT COUNT(a1.id) FROM article a1 <include refid="filterJoin"/>
+    WHERE delete_flag = '0';
+  </select>
+  <select id="selectLimit" resultMap="articleResult">
+    SELECT a.id, a.title, a.excerpt, a.create_time, a.modify_time,
+           u.id AS user_id, u.username AS user_username, u.realname AS user_realname,
+           c.id AS category_id, c.slug AS category_slug, c.name AS category_name,
+           t.id AS tag_id, t.slug AS tag_slug, t.name AS tag_name
+    FROM (<include refid="selectArticleIds"/>) sub
+    JOIN article a ON sub.id = a.id
+    LEFT JOIN category c ON a.category_id = c.id
+    LEFT JOIN user u ON a.author_id = u.id
+    LEFT JOIN article_tag at ON a.id = at.article
+    LEFT JOIN tag t ON at.tag = t.id;
+  </select>
+  <update id="resetCategoryId">
+    UPDATE article SET modify_time = NOW() AND category_id = 1
+    WHERE delete_flag = '0' AND category_id IN
+    <foreach collection="categoryIds" index="index" item="item" open="(" close=")" separator=",">
+      #{item}
+    </foreach>
+  </update>
+  <update id="deleteByUsers">
+    UPDATE article SET delete_flag = '1'
+    WHERE author_id IN
+    <foreach collection="ids" index="index" item="item" open="(" close=")" separator=",">
+      #{item}
+    </foreach>
+  </update>
+</mapper>

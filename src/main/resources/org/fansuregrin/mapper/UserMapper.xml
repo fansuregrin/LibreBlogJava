@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.fansuregrin.mapper.UserMapper">
+  <resultMap id="userResult" type="org.fansuregrin.entity.User">
+    <id property="id" column="id"/>
+    <result property="username" column="username"/>
+    <result property="realname" column="realname"/>
+    <result property="email" column="email"/>
+    <result property="createTime" column="create_time"/>
+    <result property="modifyTime" column="modify_time"/>
+    <association property="role" resultMap="roleResult"/>
+  </resultMap>
+  <resultMap id="roleResult" type="org.fansuregrin.entity.Role">
+    <id property="id" column="role_id"/>
+    <result property="name" column="role_name"/>
+  </resultMap>
+  <select id="select" resultType="org.fansuregrin.entity.User">
+    SELECT id,username,realname,email,password,create_time,modify_time,role_id
+    FROM user WHERE id = #{id} AND delete_flag = '0';
+  </select>
+  <select id="selectByUsername" resultType="org.fansuregrin.entity.User">
+    SELECT id,username,realname,email,password,create_time,modify_time,role_id
+    FROM user WHERE username = #{username}
+  </select>
+  <insert id="insert">
+    INSERT INTO user (username, password, create_time, modify_time, email, realname, role_id)
+    VALUE (#{username}, #{password}, NOW(), NOW(), #{email}, #{realname}, #{roleId})
+  </insert>
+  <select id="count" resultType="int">
+    SELECT COUNT(*)
+    FROM user u
+    <if test="roleId != null and roleId > 0">
+        JOIN role r ON u.role_id = r.id
+    </if>
+    WHERE delete_flag = '0'
+    <if test="roleId != null and roleId > 0">
+      AND r.id = #{roleId}
+    </if>
+    <if test="username != null and username != ''">
+      AND u.username LIKE CONCAT('%', #{username}, '%')
+    </if>
+    <if test="realname != null and realname != ''">
+      AND u.realname LIKE CONCAT('%', #{realname}, '%')
+    </if>
+    <if test="email != null and email != ''">
+      AND u.email LIKE CONCAT('%', #{email}, '%')
+    </if>
+  </select>
+  <update id="update">
+    UPDATE user SET modify_time = NOW()
+    <if test="username != null and username != ''">
+      ,username = #{username}
+    </if>
+    <if test="password != null and password != ''">
+      ,password = #{password}
+    </if>
+    <if test="email != null and email != ''">
+      ,email = #{email}
+    </if>
+    <if test="realname != null and realname != ''">
+      ,realname = #{realname}
+    </if>
+    <if test="roleId != null and roleId > 0">
+      ,role_id = #{roleId}
+    </if>
+    WHERE id = #{id} AND delete_flag = '0'
+  </update>
+  <select id="selectLimit" resultMap="userResult">
+    SELECT u.username, u.realname, u.email, u.create_time, u.modify_time,
+           r.id AS role_id, r.name AS role_name
+    FROM user u
+    JOIN role r ON u.role_id = r.id
+    WHERE delete_flag = '0'
+    <if test="roleId != null and roleId > 0">
+      AND r.id = #{roleId}
+    </if>
+    <if test="username != null and username != ''">
+      AND u.username LIKE CONCAT('%', #{username}, '%')
+    </if>
+    <if test="realname != null and realname != ''">
+      AND u.realname LIKE CONCAT('%', #{realname}, '%')
+    </if>
+    <if test="email != null and email != ''">
+      AND u.email LIKE CONCAT('%', #{email}, '%')
+    </if>
+    ORDER BY modify_time DESC LIMIT #{start},#{pageSize}
+  </select>
+  <update id="delete">
+    UPDATE user SET delete_flag = '1' WHERE id IN
+    <foreach item="item" index="index" open="(" close=")" separator="," collection="ids">
+      #{item}
+    </foreach>
+    AND id != 1
+  </update>
+</mapper>

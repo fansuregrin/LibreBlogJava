@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.fansuregrin.mapper.CategoryMapper">
+  <select id="selectAll" resultType="org.fansuregrin.entity.Category">
+    SELECT id,name,slug,create_time,modify_time FROM category
+    WHERE delete_flag = '0'
+  </select>
+  <select id="select" resultType="org.fansuregrin.entity.Category">
+    SELECT id,name,slug,create_time,modify_time FROM category
+    WHERE delete_flag = '0' AND id = #{id}
+  </select>
+  <select id="selectBySlug" resultType="org.fansuregrin.entity.Category">
+    SELECT id,name,slug,create_time,modify_time FROM category
+    WHERE delete_flag = '0' AND slug = #{slug}
+  </select>
+  <insert id="insert">
+    INSERT INTO category (name, slug, create_time, modify_time)
+    VALUE (#{name}, #{slug}, NOW(), NOW())
+  </insert>
+  <update id="update">
+    UPDATE category SET modify_time = NOW()
+    <if test="slug != null and slug != ''">,slug = #{slug}</if>
+    <if test="name != null and name != ''">,name = #{name}</if>
+    WHERE delete_flag = '0' AND id > 1 AND id = #{id}
+  </update>
+  <update id="delete">
+    UPDATE category SET delete_flag = '1' WHERE id > 1 AND id IN
+    <foreach collection="ids" index="index" item="item" open="(" close=")" separator=",">
+      #{item}
+    </foreach>
+  </update>
+</mapper>
