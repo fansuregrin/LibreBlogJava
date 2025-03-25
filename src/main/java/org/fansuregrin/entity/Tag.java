@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
 import lombok.Data;
+import org.fansuregrin.annotation.NotBlankIfNotNull;
 import org.fansuregrin.validation.ValidateGroup;
 
 import java.time.LocalDateTime;
@@ -18,10 +19,12 @@ public class Tag {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @NotBlank(groups = ValidateGroup.Crud.Create.class, message = "标签名称不能为空")
+    @NotBlankIfNotNull(groups = ValidateGroup.Crud.Update.class, message = "标签名称不能为空")
     private String name;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @NotBlank(groups = ValidateGroup.Crud.Create.class, message = "标签名称不能为空")
+    @NotBlankIfNotNull(groups = ValidateGroup.Crud.Update.class, message = "标签名称不能为空")
     private String slug;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)

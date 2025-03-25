@@ -8,7 +8,6 @@ import org.fansuregrin.mapper.ArticleTagMapper;
 import org.fansuregrin.mapper.TagMapper;
 import org.fansuregrin.service.TagService;
 import org.fansuregrin.util.UserUtil;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,17 +48,18 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public void add(Tag tag) {
         User loginUser = UserUtil.getLoginUser();
         int roleId = loginUser.getRoleId();
         if (Role.ADMINISTRATOR != roleId && Role.EDITOR != roleId) {
             throw new PermissionException("没有权限");
         }
-        try {
-            tagMapper.insert(tag);
-        } catch (DuplicateKeyException e) {
-            throw new DuplicateResourceException("名称或缩略名被占用");
-        }
+
+        checkDuplicateName(tag.getName());
+        checkDuplicateSlug(tag.getSlug());
+
+        tagMapper.insert(tag);
     }
 
     @Override
@@ -69,10 +69,28 @@ public class TagServiceImpl implements TagService {
         if (Role.ADMINISTRATOR != roleId && Role.EDITOR != roleId) {
             throw new PermissionException("没有权限");
         }
-        try {
-            tagMapper.update(tag);
-        } catch (DuplicateKeyException e) {
-            throw new DuplicateResourceException("名称或缩略名被占用");
+
+        String tagName = tag.getName();
+        if (tagName != null) {
+            checkDuplicateName(tagName);
+        }
+        String tagSlug = tag.getSlug();
+        if (tagSlug != null) {
+            checkDuplicateSlug(tagSlug);
+        }
+
+        tagMapper.update(tag);
+    }
+
+    private void checkDuplicateName(String name) {
+        if (tagMapper.selectByNameForUpdate(name) != null) {
+            throw new DuplicateResourceException("名称被占用：name = " + name);
+        }
+    }
+
+    private void checkDuplicateSlug(String slug) {
+        if (tagMapper.selectBySlugForUpdate(slug) != null) {
+            throw new DuplicateResourceException("缩略名被占用：slug = " + slug);
         }
     }
 

@@ -1,8 +1,11 @@
 package org.fansuregrin.entity;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Null;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.fansuregrin.validation.ValidateGroup;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,6 +14,8 @@ import java.util.List;
 @Data
 public class Article extends BaseEntity {
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Null(groups = ValidateGroup.Crud.Create.class, message = "无需提供文章ID")
+    @NotNull(groups = ValidateGroup.Crud.Update.class, message = "缺失id字段，请提供文章ID")
     private Integer id;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)

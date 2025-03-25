@@ -6,6 +6,12 @@
   <insert id="insert">
     INSERT INTO article_tag (article, tag) VALUE (#{article}, #{tag})
   </insert>
+  <insert id="insertMulti">
+    INSERT INTO article_tag (article, tag) VALUES
+    <foreach collection="articleTags" item="at" index="index" separator=",">
+      (#{at.article}, #{at.tag})
+    </foreach>
+  </insert>
   <update id="deleteByArticles">
     UPDATE article_tag SET delete_flag = '1'
     WHERE article IN

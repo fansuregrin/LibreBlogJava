@@ -33,8 +33,7 @@ CREATE TABLE `user`
     `role_id`     INT          NOT NULL DEFAULT 4,
     `delete_flag` CHAR(1)      NOT NULL DEFAULT '0',
     PRIMARY KEY (`id`),
-    UNIQUE KEY `username` (`username`),
-    KEY `idx_role` (`role_id`)
+    KEY `idx_username` (`username`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
 
@@ -46,9 +45,7 @@ CREATE TABLE `tag`
     `create_time` DATETIME     NOT NULL DEFAULT NOW(),
     `modify_time` DATETIME     NOT NULL DEFAULT NOW(),
     `delete_flag` CHAR(1)      NOT NULL DEFAULT '0',
-    PRIMARY KEY (`id`),
-    UNIQUE KEY `slug` (`slug`),
-    UNIQUE KEY `name` (`name`)
+    PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
 
@@ -60,9 +57,7 @@ CREATE TABLE `category`
     `create_time` DATETIME     NOT NULL DEFAULT NOW(),
     `modify_time` DATETIME     NOT NULL DEFAULT NOW(),
     `delete_flag` CHAR(1)      NOT NULL DEFAULT '0',
-    PRIMARY KEY (`id`),
-    UNIQUE KEY `name` (`name`),
-    UNIQUE KEY `slug` (`slug`)
+    PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
 

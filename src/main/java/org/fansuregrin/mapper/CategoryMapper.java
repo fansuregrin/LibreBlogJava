@@ -12,6 +12,12 @@ public interface CategoryMapper {
 
     Category select(int id);
 
+    Category selectForUpdate(int id);
+
+    Category selectByNameForUpdate(String name);
+
+    Category selectBySlugForUpdate(String slug);
+
     Category selectBySlug(String slug);
 
     void insert(Category category);

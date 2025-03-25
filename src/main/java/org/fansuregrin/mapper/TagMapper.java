@@ -15,6 +15,10 @@ public interface TagMapper {
 
     Tag selectBySlug(String slug);
 
+    Tag selectByNameForUpdate(String name);
+
+    Tag selectBySlugForUpdate(String slug);
+
     List<Tag> selectLimit(TagQuery query);
 
     void insert(Tag tag);

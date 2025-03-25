@@ -16,13 +16,20 @@
     <id property="id" column="role_id"/>
     <result property="name" column="role_name"/>
   </resultMap>
+  <sql id="userColumns">
+    id,username,realname,email,password,create_time,modify_time,role_id
+  </sql>
   <select id="select" resultType="org.fansuregrin.entity.User">
-    SELECT id,username,realname,email,password,create_time,modify_time,role_id
-    FROM user WHERE id = #{id} AND delete_flag = '0';
+    SELECT <include refid="userColumns"/> FROM user
+    WHERE id = #{id} AND delete_flag = '0';
   </select>
   <select id="selectByUsername" resultType="org.fansuregrin.entity.User">
-    SELECT id,username,realname,email,password,create_time,modify_time,role_id
-    FROM user WHERE username = #{username}
+    SELECT <include refid="userColumns"/> FROM user
+    WHERE delete_flag = '0' AND username = #{username}
+  </select>
+  <select id="selectForUpdate" resultType="org.fansuregrin.entity.User">
+    SELECT <include refid="userColumns"/> FROM user
+    WHERE delete_flag = '0' AND id = #{id} FOR UPDATE
   </select>
   <insert id="insert">
     INSERT INTO user (username, password, create_time, modify_time, email, realname, role_id)

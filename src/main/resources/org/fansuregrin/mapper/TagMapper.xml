@@ -3,23 +3,31 @@
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.fansuregrin.mapper.TagMapper">
-  <sql id="selectCommonFields">
-    SELECT id,name,slug,create_time,modify_time FROM tag
+  <sql id="tagColumns">
+    id,name,slug,create_time,modify_time
   </sql>
   <select id="selectAll" resultType="org.fansuregrin.entity.Tag">
-    <include refid="selectCommonFields"/> WHERE delete_flag = '0'
+    SELECT <include refid="tagColumns"/> FROM tag WHERE delete_flag = '0'
     ORDER BY modify_time DESC
   </select>
   <select id="select" resultType="org.fansuregrin.entity.Tag">
-    <include refid="selectCommonFields"/>
+    SELECT <include refid="tagColumns"/> FROM tag
     WHERE delete_flag = '0' AND id = #{id}
   </select>
   <select id="selectBySlug" resultType="org.fansuregrin.entity.Tag">
-    <include refid="selectCommonFields"/>
+    SELECT <include refid="tagColumns"/> FROM tag
     WHERE delete_flag = '0' AND slug = #{slug}
   </select>
+  <select id="selectByNameForUpdate" resultType="org.fansuregrin.entity.Tag">
+    SELECT <include refid="tagColumns"/> FROM tag
+    WHERE delete_flag = '0' AND name = #{name} FOR UPDATE
+  </select>
+  <select id="selectBySlugForUpdate" resultType="org.fansuregrin.entity.Tag">
+    SELECT <include refid="tagColumns"/> FROM tag
+    WHERE delete_flag = '0' AND slug = #{slug}) FOR UPDATE
+  </select>
   <select id="selectLimit" resultType="org.fansuregrin.entity.Tag">
-    <include refid="selectCommonFields"/>
+    SELECT <include refid="tagColumns"/> FROM tag
     WHERE delete_flag = '0'
     <if test="slug != null and slug != ''">AND slug LIKE CONCAT('%', #{slug}, '%')</if>
     <if test="name != null and name != ''">AND name LIKE CONCAT('%', #{name}, '%')</if>
@@ -31,7 +39,7 @@
     <if test="slug != null and slug != ''">AND slug LIKE CONCAT('%', #{slug}, '%')</if>
     <if test="name != null and name != ''">AND name LIKE CONCAT('%', #{name}, '%')</if>
   </select>
-  <insert id="insert">
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
     INSERT INTO tag (name, slug, create_time, modify_time)
       VALUE (#{name}, #{slug}, NOW(), NOW())
   </insert>

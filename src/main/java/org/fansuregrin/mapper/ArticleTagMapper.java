@@ -10,6 +10,8 @@ public interface ArticleTagMapper {
 
     void insert(ArticleTag articleTag);
 
+    void insertMulti(List<ArticleTag> articleTags);
+
     void deleteByArticles(List<Integer> ids);
 
     void deleteByTags(List<Integer> ids);

@@ -17,4 +17,14 @@ public interface ArticleMapper {
 
     void deleteByUsers(List<Integer> ids);
 
+    Article select(int id);
+
+    void delete(List<Integer> ids, Integer authorId);
+
+    void update(Article article);
+
+    void insert(Article article);
+
+    Article selectForUpdate(int id);
+
 }

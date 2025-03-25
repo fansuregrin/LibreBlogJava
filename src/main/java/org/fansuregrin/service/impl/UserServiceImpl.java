@@ -5,7 +5,6 @@ import org.fansuregrin.entity.PageResult;
 import org.fansuregrin.entity.Role;
 import org.fansuregrin.entity.User;
 import org.fansuregrin.entity.UserQuery;
-import org.fansuregrin.exception.DuplicateResourceException;
 import org.fansuregrin.exception.LoginException;
 import org.fansuregrin.exception.PermissionException;
 import org.fansuregrin.exception.RequestDataException;
@@ -15,8 +14,8 @@ import org.fansuregrin.mapper.UserMapper;
 import org.fansuregrin.service.UserService;
 import org.fansuregrin.util.JwtUtil;
 import org.fansuregrin.util.UserUtil;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
@@ -33,7 +32,10 @@ public class UserServiceImpl implements UserService {
     private final ArticleTagMapper articleTagMapper;
     private final ArticleMapper articleMapper;
 
-    public UserServiceImpl(UserMapper userMapper, JwtUtil jwtUtil, ArticleTagMapper articleTagMapper, ArticleMapper articleMapper) {
+    public UserServiceImpl(
+        UserMapper userMapper, JwtUtil jwtUtil,
+        ArticleTagMapper articleTagMapper, ArticleMapper articleMapper
+    ) {
         this.userMapper = userMapper;
         this.jwtUtil = jwtUtil;
         this.articleTagMapper = articleTagMapper;
@@ -54,6 +56,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public void register(User user) {
         user.setPassword(UserUtil.hashPassword(user.getPassword()));
         user.setCreateTime(LocalDateTime.now());
@@ -64,11 +67,9 @@ public class UserServiceImpl implements UserService {
         if (user.getRoleId() == null || user.getRoleId() <= 0) {
             user.setRoleId(Role.SUBSCRIBER);
         }
-        try {
-            userMapper.insert(user);
-        } catch (DuplicateKeyException e) {
-            throw new DuplicateResourceException("用户名被占用", e);
-        }
+
+        // todo: check duplicate username
+        userMapper.insert(user);
     }
 
     @Override
@@ -89,6 +90,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public void updateSelfGeneralInfo(User user) {
         User loginUser = UserUtil.getLoginUser();
         user.setId(loginUser.getId());
@@ -96,19 +98,18 @@ public class UserServiceImpl implements UserService {
         if (Role.ADMINISTRATOR != loginUser.getRoleId()) {
             user.setRole(null);
         }
-        try {
-            userMapper.update(user);
-        } catch (DuplicateKeyException e) {
-            throw new DuplicateResourceException("用户名被占用", e);
-        }
+
+        // todo: check duplicate username
+        userMapper.update(user);
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public void updateSelfPassword(User user) {
         User loginUser = UserUtil.getLoginUser();
         int userId = loginUser.getId();
         user.setId(userId);
-        User oldUser = userMapper.select(userId);
+        User oldUser = userMapper.select(userId); // todo: select for update
         if (!UserUtil.verifyPassword(user.getOldPassword(), oldUser.getPassword())) {
             throw new RequestDataException("旧密码错误");
         }
@@ -130,6 +131,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public void add(User user) {
         User loginUser = UserUtil.getLoginUser();
         if (Role.ADMINISTRATOR != loginUser.getRoleId()) {
@@ -140,14 +142,12 @@ public class UserServiceImpl implements UserService {
             user.setRoleId(Role.SUBSCRIBER);
         }
         user.setPassword(UserUtil.hashPassword(user.getPassword()));
-        try {
-            userMapper.insert(user);
-        } catch (DuplicateKeyException e) {
-            throw new DuplicateResourceException("用户名被占用", e);
-        }
+        // todo: check duplicate username
+        userMapper.insert(user);
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public void updateGeneralInfo(User user) {
         User loginUser = UserUtil.getLoginUser();
         if (Role.ADMINISTRATOR != loginUser.getRoleId()) {
@@ -155,21 +155,19 @@ public class UserServiceImpl implements UserService {
         }
 
         user.setPassword(null);
-        try {
-            userMapper.update(user);
-        } catch (DuplicateKeyException e) {
-            throw new DuplicateResourceException("用户名被占用", e);
-        }
+        // todo: check duplicate username
+        userMapper.update(user);
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public void updatePassword(User user) {
         User loginUser = UserUtil.getLoginUser();
         if (Role.ADMINISTRATOR != loginUser.getRoleId()) {
             throw new PermissionException("没有权限");
         }
 
-        User oldUser = userMapper.select(user.getId());
+        User oldUser = userMapper.select(user.getId()); // todo: select for update
         if (!UserUtil.verifyPassword(user.getOldPassword(), oldUser.getPassword())) {
             throw new RequestDataException("旧密码错误");
         }
@@ -178,6 +176,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public void delete(List<Integer> ids) {
         User loginUser = UserUtil.getLoginUser();
         if (Role.ADMINISTRATOR != loginUser.getRoleId()) {

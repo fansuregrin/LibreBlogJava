@@ -77,4 +77,42 @@
       #{item}
     </foreach>
   </update>
+  <select id="select" resultMap="articleResult">
+    SELECT a.id, a.title, a.excerpt, a.create_time, a.modify_time,
+           u.id AS user_id, u.username AS user_username, u.realname AS user_realname,
+           c.id AS category_id, c.slug AS category_slug, c.name AS category_name,
+           t.id AS tag_id, t.slug AS tag_slug, t.name AS tag_name
+    FROM article a
+    LEFT JOIN category c ON a.category_id = c.id
+    LEFT JOIN user u ON a.author_id = u.id
+    LEFT JOIN article_tag at ON a.id = at.article
+    LEFT JOIN tag t ON at.tag = t.id
+    WHERE a.delete_flag = '0' AND a.id = #{id}
+  </select>
+  <update id="delete">
+    UPDATE article SET delete_flag = '1'
+    WHERE id IN
+    <foreach collection="ids" index="index" item="item" open="(" close=")" separator=",">
+      #{item}
+    </foreach>
+    <if test="authorId != null authorId > 0"> AND author_id = #{authorId}</if>
+  </update>
+  <update id="update">
+    UPDATE article SET modify_time = NOW()
+    <if test="title != null">,title = #{title}</if>
+    <if test="excerpt != null">,excerpt = #{excerpt}</if>
+    <if test="content != null">,content = #{content}</if>
+    <if test="authorId != null and authorId > 0">,author_id = #{authorId}</if>
+    <if test="categoryId != null and categoryId > 0">,category_id = #{categoryId}</if>
+    WHERE delete_flag = '0' AND id = #{id}
+  </update>
+  <insert id="insert">
+    INSERT INTO article (title, author_id, category_id, content, excerpt,
+    create_time, modify_time) VALUE
+    (#{title}, #{authorId}, #{categoryId}, #{content}, #{excerpt}, NOW(), NOW());
+  </insert>
+  <select id="selectForUpdate" resultMap="articleResult">
+    SELECT id, title, excerpt, author_id, category_id, create_time, modify_time
+    FROM article WHERE delete_flag = '0' AND id = #{id} FOR UPDATE
+  </select>
 </mapper>
