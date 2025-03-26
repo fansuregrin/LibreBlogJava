@@ -95,7 +95,7 @@
     <foreach collection="ids" index="index" item="item" open="(" close=")" separator=",">
       #{item}
     </foreach>
-    <if test="authorId != null authorId > 0"> AND author_id = #{authorId}</if>
+    <if test="authorId != null and authorId > 0"> AND author_id = #{authorId}</if>
   </update>
   <update id="update">
     UPDATE article SET modify_time = NOW()
@@ -106,7 +106,7 @@
     <if test="categoryId != null and categoryId > 0">,category_id = #{categoryId}</if>
     WHERE delete_flag = '0' AND id = #{id}
   </update>
-  <insert id="insert">
+  <insert id="insert" keyProperty="id" keyColumn="id" useGeneratedKeys="true">
     INSERT INTO article (title, author_id, category_id, content, excerpt,
     create_time, modify_time) VALUE
     (#{title}, #{authorId}, #{categoryId}, #{content}, #{excerpt}, NOW(), NOW());

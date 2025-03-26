@@ -27,7 +27,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
                 "/tag/all", "/tag/id/{id:[0-9]+}", "/tag/slug/{slug}", "/tag/list"))
             .excludePathPatterns(List.of(
                 "/user/login", "/user/register", "/user/{id:[0-9]+}"))
-            .excludePathPatterns("/article/list");
+            .excludePathPatterns(List.of("/article/list", "/article/{id:[0-9]+}"));
     }
 
 }

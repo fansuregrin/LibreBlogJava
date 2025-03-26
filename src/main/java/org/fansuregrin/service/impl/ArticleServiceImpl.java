@@ -44,6 +44,7 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public void add(Article article) {
         User loginUser = UserUtil.getLoginUser();
         int roleId = loginUser.getRoleId();
@@ -55,6 +56,17 @@ public class ArticleServiceImpl implements ArticleService {
             article.setCategoryId(Category.DEFAULT_CATEGORY_ID);
         }
         articleMapper.insert(article);
+        List<Tag> tags = article.getTags();
+        for (Tag tag : tags) {
+            String tagName = tag.getName();
+            if (tagMapper.selectByNameForUpdate(tagName) == null) {
+                if (tag.getSlug() == null) {
+                    tag.setSlug(tagName);
+                }
+                tagMapper.insert(tag);
+            }
+            articleTagMapper.insert(new ArticleTag(article.getId(), tag.getId()));
+        }
     }
 
     @Override

@@ -4,7 +4,11 @@ LibreBlog is a blogging platform powered by the Spring framework for its backend
 
 ## API Endpoints
 - Article
-  - GET `article/list`
+  - GET `/article/list`
+  - GET `/article/{id}`
+  - POST `/article`
+  - PUT `/article`
+  - DELETE `/article`
 - User
   - POST `/user/login`
   - POST `/user/register`
