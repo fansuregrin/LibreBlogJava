@@ -10,7 +10,7 @@ public interface TagService {
 
     List<Tag> getAll();
 
-    PageResult<Tag> list(TagQuery query);
+    PageResult<Tag> selfList(TagQuery query);
 
     Tag get(int id);
 

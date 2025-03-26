@@ -1,8 +1,7 @@
 package org.fansuregrin.service.impl;
 
-import org.fansuregrin.entity.Category;
-import org.fansuregrin.entity.Role;
-import org.fansuregrin.entity.User;
+import org.fansuregrin.annotation.PageCheck;
+import org.fansuregrin.entity.*;
 import org.fansuregrin.exception.DuplicateResourceException;
 import org.fansuregrin.exception.PermissionException;
 import org.fansuregrin.mapper.ArticleMapper;
@@ -29,6 +28,19 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public List<Category> getAll() {
         return categoryMapper.selectAll();
+    }
+
+    @Override
+    @PageCheck
+    public PageResult<Category> selfList(CategoryQuery query) {
+        User loginUser = UserUtil.getLoginUser();
+        int roleId = loginUser.getRoleId();
+        if (roleId != Role.ADMINISTRATOR && roleId != Role.EDITOR) {
+            throw new PermissionException("没有权限");
+        }
+        int total = categoryMapper.count(query);
+        List<Category> data = categoryMapper.selectLimit(query);
+        return new PageResult<>(total, data);
     }
 
     @Override

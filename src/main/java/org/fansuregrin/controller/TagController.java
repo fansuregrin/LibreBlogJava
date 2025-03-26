@@ -1,5 +1,6 @@
 package org.fansuregrin.controller;
 
+import org.fansuregrin.annotation.PageCheck;
 import org.fansuregrin.entity.ApiResponse;
 import org.fansuregrin.entity.PageResult;
 import org.fansuregrin.entity.Tag;
@@ -27,9 +28,9 @@ public class TagController {
         return ApiResponse.success(data);
     }
 
-    @GetMapping("list")
-    public ApiResponse list(TagQuery query) {
-        PageResult<Tag> data = tagService.list(query);
+    @GetMapping("/me/list")
+    public ApiResponse selfList(TagQuery query) {
+        PageResult<Tag> data = tagService.selfList(query);
         return ApiResponse.success(data);
     }
 

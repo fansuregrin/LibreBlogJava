@@ -23,8 +23,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
             .addPathPatterns("/**")
             .excludePathPatterns(List.of(
                 "/category/all", "/category/id/{id:[0-9]+}", "/category/slug/{slug}"))
-            .excludePathPatterns(List.of(
-                "/tag/all", "/tag/id/{id:[0-9]+}", "/tag/slug/{slug}", "/tag/list"))
+            .excludePathPatterns(List.of("/tag/id/{id:[0-9]+}", "/tag/slug/{slug}"))
             .excludePathPatterns(List.of(
                 "/user/login", "/user/register", "/user/{id:[0-9]+}"))
             .excludePathPatterns(List.of("/article/list", "/article/{id:[0-9]+}"));

@@ -2,6 +2,8 @@ package org.fansuregrin.controller;
 
 import org.fansuregrin.entity.ApiResponse;
 import org.fansuregrin.entity.Category;
+import org.fansuregrin.entity.CategoryQuery;
+import org.fansuregrin.entity.PageResult;
 import org.fansuregrin.service.CategoryService;
 import org.fansuregrin.validation.ValidateGroup;
 import org.springframework.validation.annotation.Validated;
@@ -22,6 +24,12 @@ public class CategoryController {
     @GetMapping("/all")
     public ApiResponse getAll() {
         List<Category> data = categoryService.getAll();
+        return ApiResponse.success(data);
+    }
+
+    @GetMapping("/me/list")
+    public ApiResponse selfList(CategoryQuery query) {
+        PageResult<Category> data = categoryService.selfList(query);
         return ApiResponse.success(data);
     }
 

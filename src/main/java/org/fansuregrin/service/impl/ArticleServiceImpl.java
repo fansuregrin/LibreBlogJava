@@ -39,6 +39,22 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
+    @PageCheck
+    public PageResult<Article> selfList(ArticleQuery query) {
+        User loginUser = UserUtil.getLoginUser();
+        int roleId = loginUser.getRoleId();
+        if (roleId == Role.SUBSCRIBER) {
+            throw new PermissionException("没有权限");
+        }
+        if (roleId == Role.CONTRIBUTOR) {
+            query.setAuthorId(loginUser.getId());
+        }
+        int total = articleMapper.count(query);
+        List<Article> articles = articleMapper.selectLimit(query);
+        return new PageResult<>(total, articles);
+    }
+
+    @Override
     public Article get(int id) {
         return articleMapper.select(id);
     }

@@ -5,6 +5,7 @@ LibreBlog is a blogging platform powered by the Spring framework for its backend
 ## API Endpoints
 - Article
   - GET `/article/list`
+  - GET `/article/me/list`
   - GET `/article/{id}`
   - POST `/article`
   - PUT `/article`
@@ -23,6 +24,7 @@ LibreBlog is a blogging platform powered by the Spring framework for its backend
   - DELETE `/user`
 - Category
   - GET `/category/all`
+  - GET `/category/me/list`
   - GET `/category/id/{id}`
   - GET `/category/slug/{slug}`
   - POST `/category`
@@ -30,7 +32,7 @@ LibreBlog is a blogging platform powered by the Spring framework for its backend
   - DELETE `/category`
 - Tag
   - GET `/tag/all`
-  - GET `/tag/list`
+  - GET `/tag/me/list`
   - GET `/tag/id/{id}`
   - GET `/tag/slug/{slug}`
   - POST `/tag`

@@ -2,6 +2,7 @@ package org.fansuregrin.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.fansuregrin.entity.Category;
+import org.fansuregrin.entity.CategoryQuery;
 
 import java.util.List;
 
@@ -11,6 +12,10 @@ public interface CategoryMapper {
     List<Category> selectAll();
 
     Category select(int id);
+
+    int count(CategoryQuery query);
+
+    List<Category> selectLimit(CategoryQuery query);
 
     Category selectForUpdate(int id);
 

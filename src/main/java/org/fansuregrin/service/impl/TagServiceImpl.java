@@ -32,7 +32,12 @@ public class TagServiceImpl implements TagService {
 
     @Override
     @PageCheck
-    public PageResult<Tag> list(TagQuery query) {
+    public PageResult<Tag> selfList(TagQuery query) {
+        User loginUser = UserUtil.getLoginUser();
+        int roleId = loginUser.getRoleId();
+        if (roleId != Role.ADMINISTRATOR && roleId != Role.EDITOR) {
+            throw new PermissionException("没有权限");
+        }
         int total = tagMapper.count(query);
         List<Tag> tags = tagMapper.selectLimit(query);
         return new PageResult<>(total, tags);

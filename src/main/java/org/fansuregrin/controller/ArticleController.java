@@ -25,6 +25,12 @@ public class ArticleController {
         return ApiResponse.success(data);
     }
 
+    @GetMapping("/me/list")
+    public ApiResponse selfList(ArticleQuery query) {
+        PageResult<Article> data = articleService.selfList(query);
+        return ApiResponse.success(data);
+    }
+
     @GetMapping("/{id}")
     public ApiResponse get(@PathVariable int id) {
         Article data = articleService.get(id);

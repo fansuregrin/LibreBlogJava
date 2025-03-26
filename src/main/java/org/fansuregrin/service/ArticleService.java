@@ -10,6 +10,8 @@ public interface ArticleService {
 
     PageResult<Article> list(ArticleQuery query);
 
+    PageResult<Article> selfList(ArticleQuery query);
+
     Article get(int id);
 
     void add(Article article);
