@@ -24,7 +24,7 @@
   </select>
   <select id="selectBySlugForUpdate" resultType="org.fansuregrin.entity.Tag">
     SELECT <include refid="tagColumns"/> FROM tag
-    WHERE delete_flag = '0' AND slug = #{slug}) FOR UPDATE
+    WHERE delete_flag = '0' AND slug = #{slug} FOR UPDATE
   </select>
   <select id="selectLimit" resultType="org.fansuregrin.entity.Tag">
     SELECT <include refid="tagColumns"/> FROM tag

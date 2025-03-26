@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class TagServiceImpl implements TagService {
@@ -56,13 +57,20 @@ public class TagServiceImpl implements TagService {
             throw new PermissionException("没有权限");
         }
 
-        checkDuplicateName(tag.getName());
-        checkDuplicateSlug(tag.getSlug());
+        String tagName = tag.getName();
+        if (tagMapper.selectByNameForUpdate(tagName) != null) {
+            throw new DuplicateResourceException("名称被占用：name = " + tagName);
+        }
+        String tagSlug = tag.getSlug();
+        if (tagMapper.selectBySlugForUpdate(tagSlug) != null) {
+            throw new DuplicateResourceException("缩略名被占用：slug = " + tagSlug);
+        }
 
         tagMapper.insert(tag);
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public void update(Tag tag) {
         User loginUser = UserUtil.getLoginUser();
         int roleId = loginUser.getRoleId();
@@ -71,27 +79,20 @@ public class TagServiceImpl implements TagService {
         }
 
         String tagName = tag.getName();
-        if (tagName != null) {
-            checkDuplicateName(tagName);
+        Tag oldTag;
+        if (tagName != null &&
+            (oldTag = tagMapper.selectByNameForUpdate(tagName)) != null &&
+            !Objects.equals(oldTag.getId(), tag.getId())) {
+            throw new DuplicateResourceException("名称被占用：name = " + tagName);
         }
         String tagSlug = tag.getSlug();
-        if (tagSlug != null) {
-            checkDuplicateSlug(tagSlug);
+        if (tagSlug != null &&
+            (oldTag = tagMapper.selectBySlugForUpdate(tagSlug)) != null &&
+            !Objects.equals(oldTag.getId(), tag.getId())) {
+            throw new DuplicateResourceException("缩略名被占用：slug = " + tagSlug);
         }
 
         tagMapper.update(tag);
-    }
-
-    private void checkDuplicateName(String name) {
-        if (tagMapper.selectByNameForUpdate(name) != null) {
-            throw new DuplicateResourceException("名称被占用：name = " + name);
-        }
-    }
-
-    private void checkDuplicateSlug(String slug) {
-        if (tagMapper.selectBySlugForUpdate(slug) != null) {
-            throw new DuplicateResourceException("缩略名被占用：slug = " + slug);
-        }
     }
 
     @Override

@@ -31,6 +31,10 @@
     SELECT <include refid="userColumns"/> FROM user
     WHERE delete_flag = '0' AND id = #{id} FOR UPDATE
   </select>
+  <select id="selectByUsernameForUpdate" resultType="org.fansuregrin.entity.User">
+    SELECT <include refid="userColumns"/> FROM user WHERE delete_flag = '0'
+    AND username = #{username} FOR UPDATE
+  </select>
   <insert id="insert">
     INSERT INTO user (username, password, create_time, modify_time, email, realname, role_id)
     VALUE (#{username}, #{password}, NOW(), NOW(), #{email}, #{realname}, #{roleId})

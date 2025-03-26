@@ -15,6 +15,8 @@ public interface UserMapper {
 
     User selectForUpdate(int id);
 
+    User selectByUsernameForUpdate(String username);
+
     void insert(User user);
 
     void update(User user);

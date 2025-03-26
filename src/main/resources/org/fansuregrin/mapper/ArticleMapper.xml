@@ -44,12 +44,12 @@
     </if>
   </sql>
   <sql id="selectArticleIds">
-    SELECT a1.id FROM article a1 <include refid="filterJoin"/> WHERE delete_flag = '0'
+    SELECT a1.id FROM article a1 <include refid="filterJoin"/> WHERE a1.delete_flag = '0'
     ORDER BY a1.modify_time DESC LIMIT #{start},#{pageSize}
   </sql>
   <select id="count" resultType="integer">
     SELECT COUNT(a1.id) FROM article a1 <include refid="filterJoin"/>
-    WHERE delete_flag = '0';
+    WHERE a1.delete_flag = '0';
   </select>
   <select id="selectLimit" resultMap="articleResult">
     SELECT a.id, a.title, a.excerpt, a.create_time, a.modify_time,

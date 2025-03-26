@@ -5,6 +5,7 @@ import org.fansuregrin.entity.PageResult;
 import org.fansuregrin.entity.Role;
 import org.fansuregrin.entity.User;
 import org.fansuregrin.entity.UserQuery;
+import org.fansuregrin.exception.DuplicateResourceException;
 import org.fansuregrin.exception.LoginException;
 import org.fansuregrin.exception.PermissionException;
 import org.fansuregrin.exception.RequestDataException;
@@ -22,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -68,7 +70,10 @@ public class UserServiceImpl implements UserService {
             user.setRoleId(Role.SUBSCRIBER);
         }
 
-        // todo: check duplicate username
+        String username = user.getUsername();
+        if (userMapper.selectByUsernameForUpdate(username) != null) {
+            throw new DuplicateResourceException("用户名被占用：username = " + username);
+        }
         userMapper.insert(user);
     }
 
@@ -93,13 +98,20 @@ public class UserServiceImpl implements UserService {
     @Transactional(rollbackFor = {Exception.class})
     public void updateSelfGeneralInfo(User user) {
         User loginUser = UserUtil.getLoginUser();
-        user.setId(loginUser.getId());
+        int userId = loginUser.getId();
+        user.setId(userId);
         user.setPassword(null);
         if (Role.ADMINISTRATOR != loginUser.getRoleId()) {
             user.setRole(null);
         }
 
-        // todo: check duplicate username
+        String username = user.getUsername();
+        if (username != null) {
+            User oldUser = userMapper.selectByUsernameForUpdate(username);
+            if (!Objects.equals(oldUser.getId(), userId)) {
+                throw new DuplicateResourceException("用户名被占用：username = " + username);
+            }
+        }
         userMapper.update(user);
     }
 
@@ -109,7 +121,7 @@ public class UserServiceImpl implements UserService {
         User loginUser = UserUtil.getLoginUser();
         int userId = loginUser.getId();
         user.setId(userId);
-        User oldUser = userMapper.select(userId); // todo: select for update
+        User oldUser = userMapper.selectForUpdate(userId);
         if (!UserUtil.verifyPassword(user.getOldPassword(), oldUser.getPassword())) {
             throw new RequestDataException("旧密码错误");
         }
@@ -142,7 +154,11 @@ public class UserServiceImpl implements UserService {
             user.setRoleId(Role.SUBSCRIBER);
         }
         user.setPassword(UserUtil.hashPassword(user.getPassword()));
-        // todo: check duplicate username
+
+        String username = user.getUsername();
+        if (userMapper.selectByUsernameForUpdate(username) != null) {
+            throw new DuplicateResourceException("用户名被占用：username = " + username);
+        }
         userMapper.insert(user);
     }
 
@@ -155,7 +171,15 @@ public class UserServiceImpl implements UserService {
         }
 
         user.setPassword(null);
-        // todo: check duplicate username
+
+        int userId = loginUser.getId();
+        String username = user.getUsername();
+        if (username != null) {
+            User oldUser = userMapper.selectByUsernameForUpdate(username);
+            if (!Objects.equals(oldUser.getId(), userId)) {
+                throw new DuplicateResourceException("用户名被占用：username = " + username);
+            }
+        }
         userMapper.update(user);
     }
 
@@ -167,7 +191,7 @@ public class UserServiceImpl implements UserService {
             throw new PermissionException("没有权限");
         }
 
-        User oldUser = userMapper.select(user.getId()); // todo: select for update
+        User oldUser = userMapper.selectForUpdate(user.getId());
         if (!UserUtil.verifyPassword(user.getOldPassword(), oldUser.getPassword())) {
             throw new RequestDataException("旧密码错误");
         }

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
@@ -49,8 +50,19 @@ public class CategoryServiceImpl implements CategoryService {
             throw new PermissionException("没有权限");
         }
 
-        checkDuplicateName(category.getName());
-        checkDuplicateSlug(category.getSlug());
+        String categoryName = category.getName();
+        Category oldCategory;
+        if (categoryName != null &&
+            (oldCategory = categoryMapper.selectByNameForUpdate(categoryName)) != null &&
+            !Objects.equals(oldCategory.getId(), category.getId())) {
+            throw new DuplicateResourceException("名称被占用：name = " + categoryName);
+        }
+        String categorySlug = category.getSlug();
+        if (categorySlug != null &&
+            (oldCategory = categoryMapper.selectBySlugForUpdate(categorySlug)) != null &&
+            !Objects.equals(oldCategory.getId(), category.getId())) {
+            throw new DuplicateResourceException("缩略名被占用：slug = " + categorySlug);
+        }
         categoryMapper.update(category);
     }
 
@@ -75,22 +87,14 @@ public class CategoryServiceImpl implements CategoryService {
         }
 
         String categoryName = category.getName();
-        if (categoryName != null) checkDuplicateName(categoryName);
+        if (categoryMapper.selectByNameForUpdate(categoryName) != null) {
+            throw new DuplicateResourceException("名称被占用：name = " + categoryName);
+        }
         String categorySlug = category.getSlug();
-        if (categorySlug != null) checkDuplicateSlug(categorySlug);
+        if (categoryMapper.selectBySlugForUpdate(categorySlug) != null) {
+            throw new DuplicateResourceException("缩略名被占用：slug = " + categorySlug);
+        }
         categoryMapper.insert(category);
-    }
-
-    private void checkDuplicateName(String name) {
-        if (categoryMapper.selectByNameForUpdate(name) != null) {
-            throw new DuplicateResourceException("名称被占用：name = " + name);
-        }
-    }
-
-    private void checkDuplicateSlug(String slug) {
-        if (categoryMapper.selectBySlugForUpdate(slug) != null) {
-            throw new DuplicateResourceException("缩略名被占用：slug = " + slug);
-        }
     }
 
 }
