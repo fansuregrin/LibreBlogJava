@@ -8,6 +8,8 @@ import java.util.List;
 @Mapper
 public interface ArticleTagMapper {
 
+    ArticleTag selectForUpdate(int articleId, int tagId);
+
     void insert(ArticleTag articleTag);
 
     void insertMulti(List<ArticleTag> articleTags);
@@ -17,5 +19,7 @@ public interface ArticleTagMapper {
     void deleteByTags(List<Integer> ids);
 
     void deleteByUsers(List<Integer> ids);
+
+    void deleteByUsersAndArticles(List<Integer> articleIds, List<Integer> userIds);
 
 }

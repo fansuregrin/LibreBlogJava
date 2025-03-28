@@ -79,7 +79,7 @@
     WHERE id = #{id} AND delete_flag = '0'
   </update>
   <select id="selectLimit" resultMap="userResult">
-    SELECT u.username, u.realname, u.email, u.create_time, u.modify_time,
+    SELECT u.id, u.username, u.realname, u.email, u.create_time, u.modify_time,
            r.id AS role_id, r.name AS role_name
     FROM user u
     JOIN role r ON u.role_id = r.id

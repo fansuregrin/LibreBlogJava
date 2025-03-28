@@ -1,9 +1,6 @@
 package org.fansuregrin.controller;
 
-import org.fansuregrin.entity.ApiResponse;
-import org.fansuregrin.entity.Article;
-import org.fansuregrin.entity.ArticleQuery;
-import org.fansuregrin.entity.PageResult;
+import org.fansuregrin.entity.*;
 import org.fansuregrin.service.ArticleService;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +25,12 @@ public class ArticleController {
     @GetMapping("/me/list")
     public ApiResponse selfList(ArticleQuery query) {
         PageResult<Article> data = articleService.selfList(query);
+        return ApiResponse.success(data);
+    }
+
+    @GetMapping("/authors")
+    public ApiResponse getAuthors(UserQuery query) {
+        PageResult<User> data = articleService.getAuthors(query);
         return ApiResponse.success(data);
     }
 

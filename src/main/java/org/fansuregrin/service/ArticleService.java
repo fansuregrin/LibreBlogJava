@@ -1,8 +1,6 @@
 package org.fansuregrin.service;
 
-import org.fansuregrin.entity.Article;
-import org.fansuregrin.entity.ArticleQuery;
-import org.fansuregrin.entity.PageResult;
+import org.fansuregrin.entity.*;
 
 import java.util.List;
 
@@ -13,6 +11,8 @@ public interface ArticleService {
     PageResult<Article> selfList(ArticleQuery query);
 
     Article get(int id);
+
+    PageResult<User> getAuthors(UserQuery query);
 
     void add(Article article);
 

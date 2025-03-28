@@ -3,7 +3,7 @@ spring:
     name: LibreBlog
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3307/libre_blog
+    url: jdbc:mysql://172.24.32.149:3307/libre_blog
     username: fansuregrin
     password: Fg12345#
 mybatis:

@@ -5,7 +5,7 @@
 <mapper namespace="org.fansuregrin.mapper.ArticleMapper">
   <resultMap id="articleResult" type="org.fansuregrin.entity.Article">
     <id property="id" column="id"/>
-    <result property="authorId" column="author_id"/>
+    <result property="authorId" column="user_id"/>
     <result property="categoryId" column="category_id"/>
     <result property="title" column="title"/>
     <result property="excerpt" column="excerpt"/>
@@ -78,7 +78,7 @@
     </foreach>
   </update>
   <select id="select" resultMap="articleResult">
-    SELECT a.id, a.title, a.excerpt, a.create_time, a.modify_time,
+    SELECT a.id, a.title, a.excerpt, a.content, a.create_time, a.modify_time,
            u.id AS user_id, u.username AS user_username, u.realname AS user_realname,
            c.id AS category_id, c.slug AS category_slug, c.name AS category_name,
            t.id AS tag_id, t.slug AS tag_slug, t.name AS tag_name

@@ -6,6 +6,7 @@ import org.fansuregrin.exception.PermissionException;
 import org.fansuregrin.mapper.ArticleMapper;
 import org.fansuregrin.mapper.ArticleTagMapper;
 import org.fansuregrin.mapper.TagMapper;
+import org.fansuregrin.mapper.UserMapper;
 import org.fansuregrin.service.ArticleService;
 import org.fansuregrin.util.UserUtil;
 import org.springframework.stereotype.Service;
@@ -20,14 +21,16 @@ public class ArticleServiceImpl implements ArticleService {
     private final ArticleMapper articleMapper;
     private final ArticleTagMapper articleTagMapper;
     private final TagMapper tagMapper;
+    private final UserMapper userMapper;
 
     public ArticleServiceImpl(
         ArticleMapper articleMapper, ArticleTagMapper articleTagMapper,
-        TagMapper tagMapper
-    ) {
+        TagMapper tagMapper,
+        UserMapper userMapper) {
         this.articleMapper = articleMapper;
         this.articleTagMapper = articleTagMapper;
         this.tagMapper = tagMapper;
+        this.userMapper = userMapper;
     }
 
     @Override
@@ -60,6 +63,20 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
+    @PageCheck
+    public PageResult<User> getAuthors(UserQuery query) {
+        User loginUser = UserUtil.getLoginUser();
+        int roleId = loginUser.getRoleId();
+        if (roleId == Role.ADMINISTRATOR || roleId == Role.EDITOR) {
+            int total = userMapper.count(query);
+            List<User> authors = userMapper.selectLimit(query);
+            return new PageResult<>(total, authors);
+        } else {
+            throw new PermissionException("没有权限");
+        }
+    }
+
+    @Override
     @Transactional(rollbackFor = {Exception.class})
     public void add(Article article) {
         User loginUser = UserUtil.getLoginUser();
@@ -73,15 +90,17 @@ public class ArticleServiceImpl implements ArticleService {
         }
         articleMapper.insert(article);
         List<Tag> tags = article.getTags();
-        for (Tag tag : tags) {
-            String tagName = tag.getName();
-            if (tagMapper.selectByNameForUpdate(tagName) == null) {
-                if (tag.getSlug() == null) {
-                    tag.setSlug(tagName);
+        if (tags != null) {
+            for (Tag tag : tags) {
+                String tagName = tag.getName();
+                if (tagMapper.selectByNameForUpdate(tagName) == null) {
+                    if (tag.getSlug() == null) {
+                        tag.setSlug(tagName);
+                    }
+                    tagMapper.insert(tag);
                 }
-                tagMapper.insert(tag);
+                articleTagMapper.insert(new ArticleTag(article.getId(), tag.getId()));
             }
-            articleTagMapper.insert(new ArticleTag(article.getId(), tag.getId()));
         }
     }
 
@@ -108,10 +127,15 @@ public class ArticleServiceImpl implements ArticleService {
 
     private void update0(Article article) {
         articleMapper.update(article); // 更新文章
-        // 删除文章旧的标签
-        articleTagMapper.deleteByArticles(List.of(article.getId()));
         // 处理新的标签
         List<Tag> newTags = article.getTags();
+        int articleId = article.getId();
+        if (newTags == null) {
+            return;
+        } else if (newTags.isEmpty()) {
+            articleTagMapper.deleteByArticles(List.of(articleId));
+            return;
+        }
         for (Tag tag : newTags) {
             String tagName = tag.getName();
             if (tagMapper.selectByNameForUpdate(tagName) == null) {
@@ -120,18 +144,22 @@ public class ArticleServiceImpl implements ArticleService {
                 }
                 tagMapper.insert(tag);
             }
-            articleTagMapper.insert(new ArticleTag(article.getId(), tag.getId()));
+            articleTagMapper.insert(new ArticleTag(articleId, tag.getId()));
         }
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public void delete(List<Integer> ids) {
         User loginUser = UserUtil.getLoginUser();
         int roleId = loginUser.getRoleId();
         if (roleId == Role.ADMINISTRATOR || roleId == Role.EDITOR) {
             articleMapper.delete(ids, null);
+            articleTagMapper.deleteByArticles(ids);
         } else if (roleId == Role.CONTRIBUTOR) {
-            articleMapper.delete(ids, loginUser.getId());
+            int uid = loginUser.getId();
+            articleMapper.delete(ids, uid);
+            articleTagMapper.deleteByUsersAndArticles(ids, List.of(uid));
         } else {
             throw new PermissionException("没有权限");
         }
