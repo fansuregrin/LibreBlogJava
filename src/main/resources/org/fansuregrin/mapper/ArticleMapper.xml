@@ -34,13 +34,15 @@
   <sql id="filterJoin">
     <if test="authorId != null and authorId > 0">
       JOIN user u1 ON a1.author_id = u1.id AND u1.id = #{authorId}
+      AND u1.delete_flag = '0'
     </if>
     <if test="categorySlug != null and categorySlug != ''">
       JOIN category c1 ON a1.category_id = c1.id AND c1.slug = #{categorySlug}
+      AND c1.delete_flag = '0'
     </if>
     <if test="tagSlug != null and tagSlug != ''">
-      JOIN article_tag at1 ON a1.id = at1.article
-      JOIN tag t1 ON at1.tag = t1.id AND t1.slug = #{tagSlug}
+      JOIN article_tag at1 ON a1.id = at1.article AND at1.delete_flag = '0'
+      JOIN tag t1 ON at1.tag = t1.id AND t1.slug = #{tagSlug} AND t1.delete_flag = '0'
     </if>
   </sql>
   <sql id="selectArticleIds">
@@ -58,10 +60,10 @@
            t.id AS tag_id, t.slug AS tag_slug, t.name AS tag_name
     FROM (<include refid="selectArticleIds"/>) sub
     JOIN article a ON sub.id = a.id
-    LEFT JOIN category c ON a.category_id = c.id
-    LEFT JOIN user u ON a.author_id = u.id
-    LEFT JOIN article_tag at ON a.id = at.article
-    LEFT JOIN tag t ON at.tag = t.id;
+    LEFT JOIN category c ON a.category_id = c.id AND c.delete_flag = '0'
+    LEFT JOIN user u ON a.author_id = u.id AND u.delete_flag = '0'
+    LEFT JOIN article_tag at ON a.id = at.article AND at.delete_flag = '0'
+    LEFT JOIN tag t ON at.tag = t.id AND t.delete_flag = '0';
   </select>
   <update id="resetCategoryId">
     UPDATE article SET modify_time = NOW() AND category_id = 1
@@ -83,10 +85,10 @@
            c.id AS category_id, c.slug AS category_slug, c.name AS category_name,
            t.id AS tag_id, t.slug AS tag_slug, t.name AS tag_name
     FROM article a
-    LEFT JOIN category c ON a.category_id = c.id
-    LEFT JOIN user u ON a.author_id = u.id
-    LEFT JOIN article_tag at ON a.id = at.article
-    LEFT JOIN tag t ON at.tag = t.id
+    LEFT JOIN category c ON a.category_id = c.id AND c.delete_flag = '0'
+    LEFT JOIN user u ON a.author_id = u.id AND u.delete_flag = '0'
+    LEFT JOIN article_tag at ON a.id = at.article AND at.delete_flag = '0'
+    LEFT JOIN tag t ON at.tag = t.id AND t.delete_flag = '0'
     WHERE a.delete_flag = '0' AND a.id = #{id}
   </select>
   <update id="delete">

@@ -132,20 +132,22 @@ public class ArticleServiceImpl implements ArticleService {
         articleMapper.update(article); // 更新文章
         // 处理新的标签
         List<Tag> newTags = article.getTags();
-        int articleId = article.getId();
         if (newTags == null) {
             return;
-        } else if (newTags.isEmpty()) {
-            articleTagMapper.deleteByArticles(List.of(articleId));
-            return;
         }
+        int articleId = article.getId();
+        // 删除文章旧的标签
+        articleTagMapper.deleteByArticles(List.of(articleId));
         for (Tag tag : newTags) {
             String tagName = tag.getName();
-            if (tagMapper.selectByNameForUpdate(tagName) == null) {
+            Tag tagInDb;
+            if ((tagInDb = tagMapper.selectByNameForUpdate(tagName)) == null) {
                 if (tag.getSlug() == null) {
                     tag.setSlug(tagName);
                 }
                 tagMapper.insert(tag);
+            } else {
+                tag = tagInDb;
             }
             articleTagMapper.insert(new ArticleTag(articleId, tag.getId()));
         }
