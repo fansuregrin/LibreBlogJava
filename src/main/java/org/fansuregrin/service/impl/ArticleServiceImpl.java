@@ -93,11 +93,14 @@ public class ArticleServiceImpl implements ArticleService {
         if (tags != null) {
             for (Tag tag : tags) {
                 String tagName = tag.getName();
-                if (tagMapper.selectByNameForUpdate(tagName) == null) {
+                Tag tagInDb;
+                if ((tagInDb = tagMapper.selectByNameForUpdate(tagName)) == null) {
                     if (tag.getSlug() == null) {
                         tag.setSlug(tagName);
                     }
                     tagMapper.insert(tag);
+                } else {
+                    tag = tagInDb;
                 }
                 articleTagMapper.insert(new ArticleTag(article.getId(), tag.getId()));
             }

@@ -31,7 +31,7 @@
     WHERE delete_flag = '0'
     <if test="slug != null and slug != ''">AND slug LIKE CONCAT('%', #{slug}, '%')</if>
     <if test="name != null and name != ''">AND name LIKE CONCAT('%', #{name}, '%')</if>
-    ORDER BY modify_time LIMIT #{start},#{pageSize}
+    ORDER BY modify_time DESC,id LIMIT #{start},#{pageSize}
   </select>
   <select id="count" resultType="int">
     SELECT COUNT(*) FROM tag

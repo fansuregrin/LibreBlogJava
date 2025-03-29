@@ -96,7 +96,7 @@
     <if test="email != null and email != ''">
       AND u.email LIKE CONCAT('%', #{email}, '%')
     </if>
-    ORDER BY modify_time DESC LIMIT #{start},#{pageSize}
+    ORDER BY modify_time DESC,id DESC LIMIT #{start},#{pageSize}
   </select>
   <update id="delete">
     UPDATE user SET delete_flag = '1' WHERE id IN
