@@ -1,12 +1,14 @@
 package org.fansuregrin.controller;
 
+import org.fansuregrin.annotation.MenuPermissionCheck;
 import org.fansuregrin.entity.*;
 import org.fansuregrin.service.ArticleService;
+import org.fansuregrin.validation.ValidateGroup;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequestMapping("/article")
 @RestController
 public class ArticleController {
 
@@ -16,43 +18,42 @@ public class ArticleController {
         this.articleService = articleService;
     }
 
-    @GetMapping("/list")
+    @GetMapping("/articles/list")
     public ApiResponse list(ArticleQuery query) {
         PageResult<Article> data = articleService.list(query);
         return ApiResponse.success(data);
     }
 
-    @GetMapping("/me/list")
-    public ApiResponse selfList(ArticleQuery query) {
-        PageResult<Article> data = articleService.selfList(query);
-        return ApiResponse.success(data);
-    }
-
-    @GetMapping("/authors")
-    public ApiResponse getAuthors(UserQuery query) {
-        PageResult<User> data = articleService.getAuthors(query);
-        return ApiResponse.success(data);
-    }
-
-    @GetMapping("/{id}")
+    @GetMapping("/articles/{id}")
     public ApiResponse get(@PathVariable int id) {
         Article data = articleService.get(id);
         return ApiResponse.success(data);
     }
 
-    @PostMapping
-    public ApiResponse add(@RequestBody Article article) {
+    @GetMapping("/admin/articles/list")
+    @MenuPermissionCheck("articleMgr:list")
+    public ApiResponse listAdmin(ArticleQuery query) {
+        PageResult<Article> data = articleService.listAdmin(query);
+        return ApiResponse.success(data);
+    }
+
+    @PostMapping("/admin/articles")
+    @MenuPermissionCheck("articleMgr:create")
+    public ApiResponse add(
+        @RequestBody @Validated(ValidateGroup.Crud.Create.class) Article article) {
         articleService.add(article);
         return ApiResponse.success();
     }
 
-    @PutMapping
+    @PutMapping("/admin/articles")
+    @MenuPermissionCheck("articleMgr:update")
     public ApiResponse update(@RequestBody Article article) {
         articleService.update(article);
         return ApiResponse.success();
     }
 
-    @DeleteMapping
+    @DeleteMapping("/admin/articles")
+    @MenuPermissionCheck("articleMgr:delete")
     public ApiResponse delete(@RequestBody List<Integer> ids) {
         articleService.delete(ids);
         return ApiResponse.success();

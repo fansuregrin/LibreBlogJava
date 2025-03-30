@@ -20,13 +20,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(@NonNull InterceptorRegistry registry) {
         registry.addInterceptor(loginInterceptor)
-            .addPathPatterns("/**")
-            .excludePathPatterns(List.of(
-                "/category/all", "/category/id/{id:[0-9]+}", "/category/slug/{slug}"))
-            .excludePathPatterns(List.of("/tag/id/{id:[0-9]+}", "/tag/slug/{slug}"))
-            .excludePathPatterns(List.of(
-                "/user/login", "/user/register", "/user/{id:[0-9]+}"))
-            .excludePathPatterns(List.of("/article/list", "/article/{id:[0-9]+}"));
+            .addPathPatterns("/admin/**");
     }
 
 }

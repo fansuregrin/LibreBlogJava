@@ -1,5 +1,6 @@
 package org.fansuregrin.controller;
 
+import org.fansuregrin.annotation.MenuPermissionCheck;
 import org.fansuregrin.entity.ApiResponse;
 import org.fansuregrin.entity.PageResult;
 import org.fansuregrin.entity.User;
@@ -12,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequestMapping("/user")
 @RestController
 public class UserController {
 
@@ -41,13 +41,21 @@ public class UserController {
         return ApiResponse.success("注册成功", null);
     }
 
-    @GetMapping("/me")
+    @GetMapping("/users/{id}")
+    public ApiResponse getGeneralInfo(@PathVariable int id) {
+        User data = userService.getGeneralInfo(id);
+        return ApiResponse.success(data);
+    }
+
+    @GetMapping("/admin/users/me")
+    @MenuPermissionCheck("userMgr:get")
     public ApiResponse getGeneralInfo() {
         User user = userService.getSelfGeneralInfo();
         return ApiResponse.success(user);
     }
 
-    @PatchMapping("/me")
+    @PatchMapping("/admin/users/me")
+    @MenuPermissionCheck("userMgr:update")
     public ApiResponse updateSelfGeneralInfo(
         @RequestBody @Validated(ValidateGroup.Crud.Update.GeneralInfo.Self.class)
         User user
@@ -56,7 +64,8 @@ public class UserController {
         return ApiResponse.success();
     }
 
-    @PatchMapping("/me/password")
+    @PatchMapping("/admin/users/me/password")
+    @MenuPermissionCheck("userMgr:update")
     public ApiResponse updateSelfPassword(
         @RequestBody @Validated(ValidateGroup.Crud.Update.Password.Self.class)
         User user
@@ -65,26 +74,23 @@ public class UserController {
         return ApiResponse.success();
     }
 
-    @GetMapping("/list")
+    @GetMapping("/admin/users/list")
+    @MenuPermissionCheck("userMgr:list")
     public ApiResponse list(UserQuery query) {
         PageResult<User> data = userService.list(query);
         return ApiResponse.success(data);
     }
 
-    @GetMapping("/{id}")
-    public ApiResponse getGeneralInfo(@PathVariable int id) {
-        User data = userService.getGeneralInfo(id);
-        return ApiResponse.success(data);
-    }
-
-    @PostMapping
+    @PostMapping("/admin/users")
+    @MenuPermissionCheck("userMgr:create")
     public ApiResponse add(
         @RequestBody @Validated(ValidateGroup.Crud.Create.class) User user) {
         userService.add(user);
         return ApiResponse.success("添加成功", null);
     }
 
-    @PatchMapping
+    @PatchMapping("/admin/users")
+    @MenuPermissionCheck("userMgr:update")
     public ApiResponse updateGeneralInfo(
         @RequestBody @Validated(ValidateGroup.Crud.Update.GeneralInfo.Other.class)
         User user
@@ -93,7 +99,8 @@ public class UserController {
         return ApiResponse.success("更新成功", null);
     }
 
-    @PatchMapping("/password")
+    @PatchMapping("/admin/users/password")
+    @MenuPermissionCheck("userMgr:update")
     public ApiResponse updatePassword(
         @RequestBody @Validated(ValidateGroup.Crud.Update.Password.Other.class)
         User user
@@ -102,7 +109,8 @@ public class UserController {
         return ApiResponse.success("更新成功", null);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/admin/users")
+    @MenuPermissionCheck("userMgr:delete")
     public ApiResponse delete(@RequestBody List<Integer> ids) {
         userService.delete(ids);
         return ApiResponse.success("删除成功", null);

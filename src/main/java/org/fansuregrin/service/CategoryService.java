@@ -10,7 +10,7 @@ public interface CategoryService {
 
     List<Category> getAll();
 
-    PageResult<Category> selfList(CategoryQuery query);
+    PageResult<Category> listAdmin(CategoryQuery query);
 
     Category get(int id);
 

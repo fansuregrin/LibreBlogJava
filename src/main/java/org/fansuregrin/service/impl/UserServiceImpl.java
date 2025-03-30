@@ -1,12 +1,9 @@
 package org.fansuregrin.service.impl;
 
 import org.fansuregrin.annotation.PageCheck;
-import org.fansuregrin.entity.PageResult;
-import org.fansuregrin.entity.Role;
-import org.fansuregrin.entity.User;
-import org.fansuregrin.entity.UserQuery;
+import org.fansuregrin.aop.PermissionAspect;
+import org.fansuregrin.entity.*;
 import org.fansuregrin.exception.DuplicateResourceException;
-import org.fansuregrin.exception.LoginException;
 import org.fansuregrin.exception.PermissionException;
 import org.fansuregrin.exception.RequestDataException;
 import org.fansuregrin.mapper.ArticleMapper;
@@ -80,9 +77,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getSelfGeneralInfo() {
         User loginUser = UserUtil.getLoginUser();
-        if (loginUser == null) {
-            throw new LoginException("登录失效，请重新登录");
-        }
         int uid = loginUser.getId();
         return getGeneralInfo(uid);
     }
@@ -98,20 +92,39 @@ public class UserServiceImpl implements UserService {
     @Transactional(rollbackFor = {Exception.class})
     public void updateSelfGeneralInfo(User user) {
         User loginUser = UserUtil.getLoginUser();
-        int userId = loginUser.getId();
-        user.setId(userId);
-        user.setPassword(null);
-        if (Role.ADMINISTRATOR != loginUser.getRoleId()) {
-            user.setRole(null);
-        }
+        user.setId(loginUser.getId());
+        updateGeneralInfo(user);
+    }
 
+    @Override
+    @Transactional(rollbackFor = {Exception.class})
+    public void updateGeneralInfo(User user) {
+        Short scope = PermissionAspect.getScope();
+        User loginUser = UserUtil.getLoginUser();
+        if (RoleMenu.SCOPE_SELF.equals(scope) &&
+            !Objects.equals(user.getId(), loginUser.getId())) {
+            throw new PermissionException("该用户只能更新自己的信息");
+        }
+        // 检查更新的用户是否存在
+        User oldUser = userMapper.selectForUpdate(user.getId());
+        if (oldUser == null) {
+            throw new RequestDataException("用户不存在");
+        }
+        // 检查新的用户名是否被占用
         String username = user.getUsername();
         if (username != null) {
-            User oldUser = userMapper.selectByUsernameForUpdate(username);
-            if (!Objects.equals(oldUser.getId(), userId)) {
+            User userInDb = userMapper.selectByUsernameForUpdate(username);
+            if (userInDb != null && !Objects.equals(userInDb.getId(), user.getId())) {
                 throw new DuplicateResourceException("用户名被占用：username = " + username);
             }
         }
+        // 非管理员无法更新用户的角色
+        if (user.getRoleId() != null) {
+            if (loginUser.getRoleId() != Role.ADMINISTRATOR) {
+                throw new PermissionException("没有权限更新用户的角色");
+            }
+        }
+        user.setPassword(null);
         userMapper.update(user);
     }
 
@@ -119,9 +132,20 @@ public class UserServiceImpl implements UserService {
     @Transactional(rollbackFor = {Exception.class})
     public void updateSelfPassword(User user) {
         User loginUser = UserUtil.getLoginUser();
-        int userId = loginUser.getId();
-        user.setId(userId);
-        User oldUser = userMapper.selectForUpdate(userId);
+        user.setId(loginUser.getId());
+        updatePassword(user);
+    }
+
+    @Override
+    @Transactional(rollbackFor = {Exception.class})
+    public void updatePassword(User user) {
+        Short scope = PermissionAspect.getScope();
+        User loginUser = UserUtil.getLoginUser();
+        if (RoleMenu.SCOPE_SELF.equals(scope) &&
+            !Objects.equals(user.getId(), loginUser.getId())) {
+            throw new PermissionException("该用户只能更新自己的密码");
+        }
+        User oldUser = userMapper.selectForUpdate(user.getId());
         if (!UserUtil.verifyPassword(user.getOldPassword(), oldUser.getPassword())) {
             throw new RequestDataException("旧密码错误");
         }
@@ -132,9 +156,13 @@ public class UserServiceImpl implements UserService {
     @Override
     @PageCheck
     public PageResult<User> list(UserQuery query) {
-        User loginUser = UserUtil.getLoginUser();
-        if (Role.ADMINISTRATOR != loginUser.getRoleId()) {
+        Short scope = PermissionAspect.getScope();
+        if (scope == null) {
             throw new PermissionException("没有权限");
+        }
+        if (RoleMenu.SCOPE_SELF.equals(scope)) {
+            User loginUser = UserUtil.getLoginUser();
+            query.setUsername(loginUser.getUsername());
         }
 
         int total = userMapper.count(query);
@@ -145,11 +173,6 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(rollbackFor = {Exception.class})
     public void add(User user) {
-        User loginUser = UserUtil.getLoginUser();
-        if (Role.ADMINISTRATOR != loginUser.getRoleId()) {
-            throw new PermissionException("没有权限");
-        }
-
         if (user.getRoleId() == null) {
             user.setRoleId(Role.SUBSCRIBER);
         }
@@ -164,48 +187,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(rollbackFor = {Exception.class})
-    public void updateGeneralInfo(User user) {
-        User loginUser = UserUtil.getLoginUser();
-        if (Role.ADMINISTRATOR != loginUser.getRoleId()) {
-            throw new PermissionException("没有权限");
-        }
-
-        user.setPassword(null);
-
-        int userId = loginUser.getId();
-        String username = user.getUsername();
-        if (username != null) {
-            User oldUser = userMapper.selectByUsernameForUpdate(username);
-            if (!Objects.equals(oldUser.getId(), userId)) {
-                throw new DuplicateResourceException("用户名被占用：username = " + username);
-            }
-        }
-        userMapper.update(user);
-    }
-
-    @Override
-    @Transactional(rollbackFor = {Exception.class})
-    public void updatePassword(User user) {
-        User loginUser = UserUtil.getLoginUser();
-        if (Role.ADMINISTRATOR != loginUser.getRoleId()) {
-            throw new PermissionException("没有权限");
-        }
-
-        User oldUser = userMapper.selectForUpdate(user.getId());
-        if (!UserUtil.verifyPassword(user.getOldPassword(), oldUser.getPassword())) {
-            throw new RequestDataException("旧密码错误");
-        }
-        user.setPassword(UserUtil.hashPassword(user.getPassword()));
-        userMapper.update(user);
-    }
-
-    @Override
-    @Transactional(rollbackFor = {Exception.class})
     public void delete(List<Integer> ids) {
-        User loginUser = UserUtil.getLoginUser();
-        if (Role.ADMINISTRATOR != loginUser.getRoleId()) {
-            throw new PermissionException("没有权限");
-        }
         articleMapper.deleteByUsers(ids);
         articleTagMapper.deleteByUsers(ids);
         userMapper.delete(ids);

@@ -1,12 +1,12 @@
 package org.fansuregrin.service.impl;
 
 import org.fansuregrin.annotation.PageCheck;
+import org.fansuregrin.aop.PermissionAspect;
 import org.fansuregrin.entity.*;
 import org.fansuregrin.exception.PermissionException;
 import org.fansuregrin.mapper.ArticleMapper;
 import org.fansuregrin.mapper.ArticleTagMapper;
 import org.fansuregrin.mapper.TagMapper;
-import org.fansuregrin.mapper.UserMapper;
 import org.fansuregrin.service.ArticleService;
 import org.fansuregrin.util.UserUtil;
 import org.springframework.stereotype.Service;
@@ -21,37 +21,18 @@ public class ArticleServiceImpl implements ArticleService {
     private final ArticleMapper articleMapper;
     private final ArticleTagMapper articleTagMapper;
     private final TagMapper tagMapper;
-    private final UserMapper userMapper;
 
     public ArticleServiceImpl(
         ArticleMapper articleMapper, ArticleTagMapper articleTagMapper,
-        TagMapper tagMapper,
-        UserMapper userMapper) {
+        TagMapper tagMapper) {
         this.articleMapper = articleMapper;
         this.articleTagMapper = articleTagMapper;
         this.tagMapper = tagMapper;
-        this.userMapper = userMapper;
     }
 
     @Override
     @PageCheck
     public PageResult<Article> list(ArticleQuery query) {
-        int total = articleMapper.count(query);
-        List<Article> articles = articleMapper.selectLimit(query);
-        return new PageResult<>(total, articles);
-    }
-
-    @Override
-    @PageCheck
-    public PageResult<Article> selfList(ArticleQuery query) {
-        User loginUser = UserUtil.getLoginUser();
-        int roleId = loginUser.getRoleId();
-        if (roleId == Role.SUBSCRIBER) {
-            throw new PermissionException("没有权限");
-        }
-        if (roleId == Role.CONTRIBUTOR) {
-            query.setAuthorId(loginUser.getId());
-        }
         int total = articleMapper.count(query);
         List<Article> articles = articleMapper.selectLimit(query);
         return new PageResult<>(total, articles);
@@ -64,31 +45,39 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     @PageCheck
-    public PageResult<User> getAuthors(UserQuery query) {
-        User loginUser = UserUtil.getLoginUser();
-        int roleId = loginUser.getRoleId();
-        if (roleId == Role.ADMINISTRATOR || roleId == Role.EDITOR) {
-            int total = userMapper.count(query);
-            List<User> authors = userMapper.selectLimit(query);
-            return new PageResult<>(total, authors);
-        } else {
+    public PageResult<Article> listAdmin(ArticleQuery query) {
+        Short scope = PermissionAspect.getScope();
+        if (scope == null) {
             throw new PermissionException("没有权限");
         }
+        if (RoleMenu.SCOPE_SELF.equals(scope)) {
+            User loginUser = UserUtil.getLoginUser();
+            query.setAuthorId(loginUser.getId());
+        }
+        int total = articleMapper.count(query);
+        List<Article> articles = articleMapper.selectLimit(query);
+        return new PageResult<>(total, articles);
     }
 
     @Override
     @Transactional(rollbackFor = {Exception.class})
     public void add(Article article) {
-        User loginUser = UserUtil.getLoginUser();
-        int roleId = loginUser.getRoleId();
-        if (Role.SUBSCRIBER == roleId) {
+        Short scope = PermissionAspect.getScope();
+        if (scope == null) {
             throw new PermissionException("没有权限");
         }
-        article.setAuthorId(loginUser.getId());
+        if (RoleMenu.SCOPE_SELF.equals(scope)) {
+            User loginUser = UserUtil.getLoginUser();
+            if (!Objects.equals(article.getAuthorId(), loginUser.getId())) {
+                throw new PermissionException("当前用户只能新增属于自己的文章");
+            }
+        }
+
         if (article.getCategoryId() == null) {
             article.setCategoryId(Category.DEFAULT_CATEGORY_ID);
         }
         articleMapper.insert(article);
+
         List<Tag> tags = article.getTags();
         if (tags != null) {
             for (Tag tag : tags) {
@@ -110,18 +99,16 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     @Transactional(rollbackFor = {Exception.class})
     public void update(Article article) {
-        User loginUser = UserUtil.getLoginUser();
-        int roleId = loginUser.getRoleId();
-        if (roleId == Role.ADMINISTRATOR || roleId == Role.EDITOR) {
-            // 管理员和编辑可以更新任何文章
+        Short scope = PermissionAspect.getScope();
+        if (RoleMenu.SCOPE_ALL.equals(scope)) {
             update0(article);
-        } else if (roleId == Role.CONTRIBUTOR) {
-            // 贡献者只能更新自己的文章
+        } else if (RoleMenu.SCOPE_SELF.equals(scope)) {
+            User loginUser = UserUtil.getLoginUser();
             Article oldArticle = articleMapper.selectForUpdate(article.getId());
             if (Objects.equals(oldArticle.getAuthorId(), loginUser.getId())) {
                 update0(article);
             } else {
-                throw new PermissionException("没有权限");
+                throw new PermissionException("当前用户只能更新自己的文章");
             }
         } else {
             throw new PermissionException("没有权限");
@@ -156,17 +143,16 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     @Transactional(rollbackFor = {Exception.class})
     public void delete(List<Integer> ids) {
-        User loginUser = UserUtil.getLoginUser();
-        int roleId = loginUser.getRoleId();
-        if (roleId == Role.ADMINISTRATOR || roleId == Role.EDITOR) {
+        Short scope = PermissionAspect.getScope();
+        if (RoleMenu.SCOPE_ALL.equals(scope)) {
             articleMapper.delete(ids, null);
             articleTagMapper.deleteByArticles(ids);
-        } else if (roleId == Role.CONTRIBUTOR) {
-            int uid = loginUser.getId();
+        } else if (RoleMenu.SCOPE_SELF.equals(scope)) {
+            int uid = UserUtil.getLoginUser().getId();
             articleMapper.delete(ids, uid);
             articleTagMapper.deleteByUsersAndArticles(ids, List.of(uid));
         } else {
-            throw new PermissionException("没有权限");
+            throw new PermissionException("没有数据权限");
         }
     }
 

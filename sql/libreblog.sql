@@ -1,12 +1,15 @@
 CREATE TABLE `menu`
 (
-    `id`       INT NOT NULL AUTO_INCREMENT,
-    `label`    VARCHAR(100) DEFAULT NULL,
-    `name`     VARCHAR(100) DEFAULT NULL,
-    `parent`   INT      DEFAULT NULL,
-    `ancestor` VARCHAR(255) DEFAULT NULL,
+    `id`        INT     NOT NULL AUTO_INCREMENT,
+    `code`      VARCHAR(100)     DEFAULT NULL,
+    `name`      VARCHAR(100)     DEFAULT NULL,
+    `parent_id` INT     NOT NULL DEFAULT 0,
+    `ancestors` VARCHAR(255)     DEFAULT NULL,
+    `level`     INT     NOT NULL DEFAULT 0,
+    `sort`      INT     NOT NULL DEFAULT 1,
+    `type`      TINYINT NOT NULL,
     PRIMARY KEY (`id`),
-    UNIQUE KEY `idx_parent_key` (`parent`, `label`)
+    KEY idx_parent_id (`parent_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
 
@@ -14,12 +17,21 @@ CREATE TABLE `role`
 (
     `id`      INT          NOT NULL AUTO_INCREMENT,
     `name`    VARCHAR(255) NOT NULL,
-    `menu_id` INT          NOT NULL,
     PRIMARY KEY (`id`),
-    UNIQUE KEY `name` (`name`),
-    KEY `idx_menu` (`menu_id`)
+    UNIQUE KEY `name` (`name`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
+
+CREATE TABLE `role_menu`
+(
+    id INT NOT NULL AUTO_INCREMENT,
+    role_id INT NOT NULL,
+    menu_id INT NOT NULL,
+    scope TINYINT COMMENT '权限范围：0-全部，1-仅自己',
+    PRIMARY KEY (id),
+    KEY idx_role_id (role_id),
+    KEY idx_menu_id (menu_id)
+) ENGINE InnoDB DEFAULT CHARSET = utf8mb4;
 
 CREATE TABLE `user`
 (
@@ -99,61 +111,124 @@ CREATE TABLE `option`
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
 
--- 每个角色的顶级菜单
-INSERT INTO menu(`id`, `label`, `name`, `parent`, `ancestor`)
-VALUES (1, 'administrator', 'administrator', NULL, NULL),
-       (2, 'editor', 'editor', NULL, NULL),
-       (3, 'contributor', 'contributor', NULL, NULL),
-       (4, 'subscriber', 'subscriber', NULL, NULL);
--- administrator 的菜单项
-INSERT INTO menu(`id`, `label`, `name`, `parent`, `ancestor`)
-VALUES (10, 'console', '控制台', 1, '1'),
-       (11, 'manage', '管理', 1, '1'),
-       (101, 'index', '首页', 10, '1,10'),
-       (102, 'userCenter', '个人中心', 10, '1,10'),
-       (103, 'logout', '登出', 10, '1,10'),
-       (110, 'article', '文章', 11, '1,11'),
-       (111, 'user', '用户', 11, '1,11'),
-       (112, 'category', '分类', 11, '1,11'),
-       (113, 'tag', '标签', 11, '1,11');
--- editor 的菜单项
-INSERT INTO menu(`id`, `label`, `name`, `parent`, `ancestor`)
-VALUES (20, 'console', '控制台', 2, '2'),
-       (21, 'manage', '管理', 2, '2'),
-       (200, 'index', '首页', 20, '2,20'),
-       (201, 'userCenter', '个人中心', 20, '2,20'),
-       (202, 'logout', '登出', 20, '2,20'),
-       (210, 'article', '文章', 21, '2,21'),
-       (211, 'category', '分类', 21, '2,21'),
-       (212, 'tag', '标签', 21, '2,21');
--- contributor 的菜单项
-INSERT INTO menu(`id`, `label`, `name`, `parent`, `ancestor`)
-VALUES (30, 'console', '控制台', 3, '3'),
-       (31, 'manage', '管理', 3, '3'),
-       (300, 'index', '首页', 30, '3,30'),
-       (301, 'userCenter', '个人中心', 30, '3,30'),
-       (302, 'logout', '登出', 30, '3,30'),
-       (310, 'article', '文章', 31, '3,31');
--- subscriber 的菜单项
-INSERT INTO menu(`id`, `label`, `name`, `parent`, `ancestor`)
-VALUES (40, 'console', '控制台', 4, '4'),
-       (400, 'index', '首页', 40, '4,40'),
-       (401, 'userCenter', '个人中心', 40, '4,40'),
-       (402, 'logout', '登出', 40, '4,40');
+-- 菜单
+INSERT INTO menu (id, code, name, parent_id, ancestors, level, sort, type) VALUES
+(1, 'sysMgr', '系统管理', 0, '', 1, 1, 1),
+(2, 'userMgr', '用户管理', 1, '1', 2, 1, 2),
+(3, 'articleMgr', '文章管理', 1, '1', 2, 2, 2),
+(4, 'categoryMgr', '分类管理', 1, '1', 2, 3, 2),
+(5, 'tagMgr', '标签管理', 1, '1', 2, 4, 2),
+(30, 'userMgr:list', '用户管理:列表', 2, '1,2', 3, 1, 3),
+(31, 'userMgr:get', '用户管理:查询', 2, '1,2', 3, 2, 3),
+(32, 'userMgr:create', '用户管理:新增', 2, '1,2', 3, 3, 3),
+(33, 'userMgr:update', '用户管理:更新', 2, '1,2', 3, 4, 3),
+(34, 'userMgr:delete', '用户管理:删除', 2, '1,2', 3, 5, 3),
+(40, 'articleMgr:list', '文章管理:列表', 3, '1,3', 3, 1, 3),
+(41, 'articleMgr:get', '文章管理:查询', 3, '1,3', 3, 2, 3),
+(42, 'articleMgr:create', '文章管理:新增', 3, '1,3', 3, 3, 3),
+(43, 'articleMgr:update', '文章管理:更新', 3, '1,3', 3, 4, 3),
+(44, 'articleMgr:delete', '文章管理:删除', 3, '1,3', 3, 5, 3),
+(50, 'categoryMgr:list', '分类管理:列表', 4, '1,4', 3, 1, 3),
+(51, 'categoryMgr:get', '分类管理:查询', 4, '1,4', 3, 2, 3),
+(52, 'categoryMgr:create', '分类管理:新增', 4, '1,4', 3, 3, 3),
+(53, 'categoryMgr:update', '分类管理:更新', 4, '1,4', 3, 4, 3),
+(54, 'categoryMgr:delete', '分类管理:删除', 4, '1,4', 3, 5, 3),
+(60, 'tagMgr:list', '标签管理:列表', 5, '1,5', 3, 1, 3),
+(61, 'tagMgr:get', '标签管理:查询', 5, '1,5', 3, 2, 3),
+(62, 'tagMgr:create', '标签管理:新增', 5, '1,5', 3, 3, 3),
+(63, 'tagMgr:update', '标签管理:更新', 5, '1,5', 3, 4, 3),
+(64, 'tagMgr:delete', '标签管理:删除', 5, '1,5', 3, 5, 3);
 
 -- 角色
-INSERT INTO role (`id`, `name`, `menu_id`)
-VALUES (1, 'administrator', 1),
-       (2, 'editor', 2),
-       (3, 'contributor', 3),
-       (4, 'subscriber', 4);
-
--- 默认密码：Pw123#
-SET @password = '169EAD658AA375192BFECCFE28F2F275C59574B3CF3BFCFA6727441FE5E89B30F42B89BC19598910BA2EE135BB3ECA08';
 SET @administrator = 1;
 SET @editor = 2;
 SET @contributor = 3;
 SET @subscriber = 4;
+INSERT INTO role (`id`, `name`)
+VALUES (@administrator, 'administrator'),
+       (@editor, 'editor'),
+       (@contributor, 'contributor'),
+       (@subscriber, 'subscriber');
+
+-- 角色权限关系
+INSERT INTO role_menu (role_id, menu_id, scope) VALUES
+(@administrator, 1, null),
+(@administrator, 2, null),
+(@administrator, 3, null),
+(@administrator, 4, null),
+(@administrator, 5, null),
+(@administrator, 30, 0),
+(@administrator, 31, 0),
+(@administrator, 32, 0),
+(@administrator, 33, 0),
+(@administrator, 34, 0),
+(@administrator, 40, 0),
+(@administrator, 41, 0),
+(@administrator, 42, 0),
+(@administrator, 43, 0),
+(@administrator, 44, 0),
+(@administrator, 50, 0),
+(@administrator, 51, 0),
+(@administrator, 52, 0),
+(@administrator, 53, 0),
+(@administrator, 54, 0),
+(@administrator, 60, 0),
+(@administrator, 61, 0),
+(@administrator, 62, 0),
+(@administrator, 63, 0),
+(@administrator, 64, 0),
+(@editor, 1, null),
+(@editor, 2, null),
+(@editor, 3, null),
+(@editor, 4, null),
+(@editor, 5, null),
+(@editor, 30, 0), -- editor可以获取所有用户列表
+(@editor, 31, 1), -- editor只能获取自己的信息
+(@editor, 33, 1), -- editor可以编辑自己的信息
+(@editor, 40, 0),
+(@editor, 41, 0),
+(@editor, 42, 0),
+(@editor, 43, 0),
+(@editor, 44, 0),
+(@editor, 50, 0),
+(@editor, 51, 0),
+(@editor, 52, 0),
+(@editor, 53, 0),
+(@editor, 54, 0),
+(@editor, 60, 0),
+(@editor, 61, 0),
+(@editor, 62, 0),
+(@editor, 63, 0),
+(@editor, 64, 0),
+(@contributor, 1, null),
+(@contributor, 2, null),
+(@contributor, 3, null),
+(@contributor, 4, null),
+(@contributor, 5, null),
+(@contributor, 30, 0),
+(@contributor, 31, 1), -- contributor只能获取自己的信息
+(@contributor, 33, 1),
+(@contributor, 40, 1),
+(@contributor, 41, 1),
+(@contributor, 42, 1),
+(@contributor, 43, 1),
+(@contributor, 44, 1),
+(@contributor, 50, 0),
+(@contributor, 51, 1),
+(@contributor, 60, 0),
+(@contributor, 61, 1),
+(@subscriber, 1, null),
+(@subscriber, 2, null),
+(@subscriber, 3, null),
+(@subscriber, 4, null),
+(@subscriber, 5, null),
+(@subscriber, 30, 1),
+(@subscriber, 31, 1),
+(@subscriber, 33, 1)
+;
+
+-- 默认密码：Pw123#
+SET @password = '169EAD658AA375192BFECCFE28F2F275C59574B3CF3BFCFA6727441FE5E89B30F42B89BC19598910BA2EE135BB3ECA08';
 INSERT INTO `user` (`username`, `password`, `email`, `realname`, `role_id`)
 VALUES ('bobwood', @password, 'bobwood@ouc.edu.cn', 'Bob Wood', @administrator),
        ('xiaohua', @password, 'xiaohua@bnu.edu.cn', '小华', @editor),

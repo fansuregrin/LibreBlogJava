@@ -8,11 +8,9 @@ public interface ArticleService {
 
     PageResult<Article> list(ArticleQuery query);
 
-    PageResult<Article> selfList(ArticleQuery query);
-
     Article get(int id);
 
-    PageResult<User> getAuthors(UserQuery query);
+    PageResult<Article> listAdmin(ArticleQuery query);
 
     void add(Article article);
 

@@ -9,8 +9,6 @@ import java.util.List;
 @Mapper
 public interface TagMapper {
 
-    List<Tag> selectAll();
-
     Tag select(int id);
 
     Tag selectBySlug(String slug);

@@ -8,9 +8,7 @@ import java.util.List;
 
 public interface TagService {
 
-    List<Tag> getAll();
-
-    PageResult<Tag> selfList(TagQuery query);
+    PageResult<Tag> listAdmin(TagQuery query);
 
     Tag get(int id);
 

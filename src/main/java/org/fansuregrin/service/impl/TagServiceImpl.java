@@ -3,11 +3,9 @@ package org.fansuregrin.service.impl;
 import org.fansuregrin.annotation.PageCheck;
 import org.fansuregrin.entity.*;
 import org.fansuregrin.exception.DuplicateResourceException;
-import org.fansuregrin.exception.PermissionException;
 import org.fansuregrin.mapper.ArticleTagMapper;
 import org.fansuregrin.mapper.TagMapper;
 import org.fansuregrin.service.TagService;
-import org.fansuregrin.util.UserUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,18 +24,8 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public List<Tag> getAll() {
-        return tagMapper.selectAll();
-    }
-
-    @Override
     @PageCheck
-    public PageResult<Tag> selfList(TagQuery query) {
-        User loginUser = UserUtil.getLoginUser();
-        int roleId = loginUser.getRoleId();
-        if (roleId != Role.ADMINISTRATOR && roleId != Role.EDITOR) {
-            throw new PermissionException("没有权限");
-        }
+    public PageResult<Tag> listAdmin(TagQuery query) {
         int total = tagMapper.count(query);
         List<Tag> tags = tagMapper.selectLimit(query);
         return new PageResult<>(total, tags);
@@ -56,12 +44,6 @@ public class TagServiceImpl implements TagService {
     @Override
     @Transactional(rollbackFor = {Exception.class})
     public void add(Tag tag) {
-        User loginUser = UserUtil.getLoginUser();
-        int roleId = loginUser.getRoleId();
-        if (Role.ADMINISTRATOR != roleId && Role.EDITOR != roleId) {
-            throw new PermissionException("没有权限");
-        }
-
         String tagName = tag.getName();
         if (tagMapper.selectByNameForUpdate(tagName) != null) {
             throw new DuplicateResourceException("名称被占用：name = " + tagName);
@@ -77,12 +59,6 @@ public class TagServiceImpl implements TagService {
     @Override
     @Transactional(rollbackFor = {Exception.class})
     public void update(Tag tag) {
-        User loginUser = UserUtil.getLoginUser();
-        int roleId = loginUser.getRoleId();
-        if (Role.ADMINISTRATOR != roleId && Role.EDITOR != roleId) {
-            throw new PermissionException("没有权限");
-        }
-
         String tagName = tag.getName();
         Tag oldTag;
         if (tagName != null &&
@@ -103,11 +79,6 @@ public class TagServiceImpl implements TagService {
     @Override
     @Transactional(rollbackFor = {Exception.class})
     public void delete(List<Integer> ids) {
-        User loginUser = UserUtil.getLoginUser();
-        int roleId = loginUser.getRoleId();
-        if (Role.ADMINISTRATOR != roleId && Role.EDITOR != roleId) {
-            throw new PermissionException("没有权限");
-        }
         articleTagMapper.deleteByTags(ids);
         tagMapper.delete(ids);
     }

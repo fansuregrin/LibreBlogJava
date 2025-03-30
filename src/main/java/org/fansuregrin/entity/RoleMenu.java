@@ -8,15 +8,22 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Role {
-    public static int ADMINISTRATOR = 1;
-    public static int EDITOR = 2;
-    public static int CONTRIBUTOR = 3;
-    public static int SUBSCRIBER = 4;
+public class RoleMenu {
+
+    public static final Short SCOPE_ALL = 0;
+
+    public static final Short SCOPE_SELF = 1;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Integer id;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String name;
+    private Integer roleId;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Integer menuId;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Short scope;
+
 }

@@ -19,6 +19,7 @@ public class Article extends BaseEntity {
     private Integer id;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @NotNull(groups = ValidateGroup.Crud.Create.class, message = "缺失authorId字段，请提供作者ID")
     private Integer authorId;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)

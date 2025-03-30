@@ -66,7 +66,7 @@
     LEFT JOIN tag t ON at.tag = t.id AND t.delete_flag = '0';
   </select>
   <update id="resetCategoryId">
-    UPDATE article SET modify_time = NOW() AND category_id = 1
+    UPDATE article SET modify_time = NOW(), category_id = 1
     WHERE delete_flag = '0' AND category_id IN
     <foreach collection="categoryIds" index="index" item="item" open="(" close=")" separator=",">
       #{item}
