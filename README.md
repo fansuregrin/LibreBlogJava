@@ -4,40 +4,39 @@ LibreBlog is a blogging platform powered by the Spring framework for its backend
 
 ## API Endpoints
 - Article
-  - GET `/article/list`
-  - GET `/article/me/list`
-  - GET `/article/{id}`
-  - POST `/article`
-  - PUT `/article`
-  - DELETE `/article`
+  - GET `/articles/list`
+  - GET `/articles/{id}`
+  - GET `/admin/articles/list`
+  - POST `/admin/articles`
+  - PUT `/admin/articles`
+  - DELETE `/admin/articles`
 - User
-  - POST `/user/login`
-  - POST `/user/register`
-  - GET `/user/list`
-  - GET `/user/me`
-  - PATCH `/user/me`
-  - PATCH `/user/me/password`
-  - GET `/user/{id}`
-  - PATCH `/user`
-  - PATCH `/user/password`
-  - POST `/user`
-  - DELETE `/user`
+  - POST `/login`
+  - POST `/register`
+  - GET `/users/{id}`
+  - GET `/admin/users/list`
+  - GET `/admin/users/me`
+  - PATCH `/admin/users/me`
+  - PATCH `/admin/users/me/password`
+  - PATCH `/admin/users`
+  - PATCH `/admin/users/password`
+  - POST `/admin/users`
+  - DELETE `/admin/users`
 - Category
-  - GET `/category/all`
-  - GET `/category/me/list`
-  - GET `/category/id/{id}`
-  - GET `/category/slug/{slug}`
-  - POST `/category`
-  - PUT `/category`
-  - DELETE `/category`
+  - GET `/categories/all`
+  - GET `/categories/id/{id}`
+  - GET `/categories/slug/{slug}`
+  - GET `/admin/categories/list`
+  - POST `/admin/categories`
+  - PUT `/admin/categories`
+  - DELETE `/admin/categories`
 - Tag
-  - GET `/tag/all`
-  - GET `/tag/me/list`
-  - GET `/tag/id/{id}`
-  - GET `/tag/slug/{slug}`
-  - POST `/tag`
-  - PUT `/tag`
-  - DELETE `/tag`
+  - GET `/tags/id/{id}`
+  - GET `/tags/slug/{slug}`
+  - GET `/admin/tags/list`
+  - POST `/admin/tags`
+  - PUT `/admin/tags`
+  - DELETE `/admin/tags`
 - Role
 - Menu
 
