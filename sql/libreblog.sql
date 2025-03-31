@@ -118,6 +118,8 @@ INSERT INTO menu (id, code, name, parent_id, ancestors, level, sort, type) VALUE
 (3, 'articleMgr', '文章管理', 1, '1', 2, 2, 2),
 (4, 'categoryMgr', '分类管理', 1, '1', 2, 3, 2),
 (5, 'tagMgr', '标签管理', 1, '1', 2, 4, 2),
+(6, 'roleMgr', '角色管理', 1, '1', 2, 5, 2),
+(7, 'menuMgr', '菜单管理', 1, '1', 2, 6, 2),
 (30, 'userMgr:list', '用户管理:列表', 2, '1,2', 3, 1, 3),
 (31, 'userMgr:get', '用户管理:查询', 2, '1,2', 3, 2, 3),
 (32, 'userMgr:create', '用户管理:新增', 2, '1,2', 3, 3, 3),
@@ -137,7 +139,9 @@ INSERT INTO menu (id, code, name, parent_id, ancestors, level, sort, type) VALUE
 (61, 'tagMgr:get', '标签管理:查询', 5, '1,5', 3, 2, 3),
 (62, 'tagMgr:create', '标签管理:新增', 5, '1,5', 3, 3, 3),
 (63, 'tagMgr:update', '标签管理:更新', 5, '1,5', 3, 4, 3),
-(64, 'tagMgr:delete', '标签管理:删除', 5, '1,5', 3, 5, 3);
+(64, 'tagMgr:delete', '标签管理:删除', 5, '1,5', 3, 5, 3),
+(70, 'roleMgr:list', '角色管理:列表', 6, '1,6', 3, 1, 3),
+(80, 'menuMgr:list', '菜单管理:列表', 7, '1,7', 3, 1, 3);
 
 -- 角色
 SET @administrator = 1;
@@ -157,6 +161,8 @@ INSERT INTO role_menu (role_id, menu_id, scope) VALUES
 (@administrator, 3, null),
 (@administrator, 4, null),
 (@administrator, 5, null),
+(@administrator, 6, null),
+(@administrator, 7, null),
 (@administrator, 30, 0),
 (@administrator, 31, 0),
 (@administrator, 32, 0),
@@ -177,11 +183,15 @@ INSERT INTO role_menu (role_id, menu_id, scope) VALUES
 (@administrator, 62, 0),
 (@administrator, 63, 0),
 (@administrator, 64, 0),
+(@administrator, 70, 0),
+(@administrator, 80, 0),
 (@editor, 1, null),
 (@editor, 2, null),
 (@editor, 3, null),
 (@editor, 4, null),
 (@editor, 5, null),
+(@editor, 6, null),
+(@editor, 7, null),
 (@editor, 30, 0), -- editor可以获取所有用户列表
 (@editor, 31, 1), -- editor只能获取自己的信息
 (@editor, 33, 1), -- editor可以编辑自己的信息
@@ -200,12 +210,16 @@ INSERT INTO role_menu (role_id, menu_id, scope) VALUES
 (@editor, 62, 0),
 (@editor, 63, 0),
 (@editor, 64, 0),
+(@editor, 70, 1),
+(@editor, 80, 1),
 (@contributor, 1, null),
 (@contributor, 2, null),
 (@contributor, 3, null),
 (@contributor, 4, null),
 (@contributor, 5, null),
-(@contributor, 30, 0),
+(@contributor, 6, null),
+(@contributor, 7, null),
+(@contributor, 30, 1),
 (@contributor, 31, 1), -- contributor只能获取自己的信息
 (@contributor, 33, 1),
 (@contributor, 40, 1),
@@ -217,14 +231,20 @@ INSERT INTO role_menu (role_id, menu_id, scope) VALUES
 (@contributor, 51, 1),
 (@contributor, 60, 0),
 (@contributor, 61, 1),
+(@contributor, 70, 1),
+(@contributor, 80, 1),
 (@subscriber, 1, null),
 (@subscriber, 2, null),
 (@subscriber, 3, null),
 (@subscriber, 4, null),
 (@subscriber, 5, null),
+(@subscriber, 6, null),
+(@subscriber, 7, null),
 (@subscriber, 30, 1),
 (@subscriber, 31, 1),
-(@subscriber, 33, 1)
+(@subscriber, 33, 1),
+(@subscriber, 70, 1),
+(@subscriber, 80, 1)
 ;
 
 -- 默认密码：Pw123#
