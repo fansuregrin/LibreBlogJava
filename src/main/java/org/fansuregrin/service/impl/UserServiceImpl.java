@@ -167,6 +167,9 @@ public class UserServiceImpl implements UserService {
 
         int total = userMapper.count(query);
         List<User> users = userMapper.selectLimit(query);
+        for (User user : users) {
+            user.setPassword(null);
+        }
         return new PageResult<>(total, users);
     }
 

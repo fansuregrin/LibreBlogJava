@@ -7,7 +7,9 @@
     <id property="id" column="id"/>
     <result property="username" column="username"/>
     <result property="realname" column="realname"/>
+    <result property="password" column="password"/>
     <result property="email" column="email"/>
+    <result property="roleId" column="role_id"/>
     <result property="createTime" column="create_time"/>
     <result property="modifyTime" column="modify_time"/>
     <association property="role" resultMap="roleResult"/>
@@ -17,23 +19,25 @@
     <result property="name" column="role_name"/>
   </resultMap>
   <sql id="userColumns">
-    id,username,realname,email,password,create_time,modify_time,role_id
+    SELECT u.id,u.username,u.realname,u.email,u.password,u.create_time,u.modify_time,
+    r.id AS role_id, r.name AS role_name FROM user u
+    JOIN role r ON u.role_id = r.id
   </sql>
-  <select id="select" resultType="org.fansuregrin.entity.User">
-    SELECT <include refid="userColumns"/> FROM user
-    WHERE id = #{id} AND delete_flag = '0';
+  <select id="select" resultMap="userResult">
+    <include refid="userColumns"/>
+    WHERE u.id = #{id} AND u.delete_flag = '0';
   </select>
-  <select id="selectByUsername" resultType="org.fansuregrin.entity.User">
-    SELECT <include refid="userColumns"/> FROM user
-    WHERE delete_flag = '0' AND username = #{username}
+  <select id="selectByUsername" resultMap="userResult">
+    <include refid="userColumns"/>
+    WHERE u.delete_flag = '0' AND u.username = #{username}
   </select>
-  <select id="selectForUpdate" resultType="org.fansuregrin.entity.User">
-    SELECT <include refid="userColumns"/> FROM user
-    WHERE delete_flag = '0' AND id = #{id} FOR UPDATE
+  <select id="selectForUpdate" resultMap="userResult">
+    <include refid="userColumns"/>
+    WHERE u.delete_flag = '0' AND u.id = #{id} FOR UPDATE
   </select>
-  <select id="selectByUsernameForUpdate" resultType="org.fansuregrin.entity.User">
-    SELECT <include refid="userColumns"/> FROM user WHERE delete_flag = '0'
-    AND username = #{username} FOR UPDATE
+  <select id="selectByUsernameForUpdate" resultMap="userResult">
+    <include refid="userColumns"/>
+    WHERE u.delete_flag = '0' AND u.username = #{username} FOR UPDATE
   </select>
   <insert id="insert">
     INSERT INTO user (username, password, create_time, modify_time, email, realname, role_id)
@@ -79,11 +83,8 @@
     WHERE id = #{id} AND delete_flag = '0'
   </update>
   <select id="selectLimit" resultMap="userResult">
-    SELECT u.id, u.username, u.realname, u.email, u.create_time, u.modify_time,
-           r.id AS role_id, r.name AS role_name
-    FROM user u
-    JOIN role r ON u.role_id = r.id
-    WHERE delete_flag = '0'
+    <include refid="userColumns"/>
+    WHERE u.delete_flag = '0'
     <if test="roleId != null and roleId > 0">
       AND r.id = #{roleId}
     </if>
@@ -96,7 +97,7 @@
     <if test="email != null and email != ''">
       AND u.email LIKE CONCAT('%', #{email}, '%')
     </if>
-    ORDER BY modify_time DESC,id DESC LIMIT #{start},#{pageSize}
+    ORDER BY u.modify_time DESC,u.id DESC LIMIT #{start},#{pageSize}
   </select>
   <update id="delete">
     UPDATE user SET delete_flag = '1' WHERE id IN
