@@ -1,11 +1,11 @@
 package org.fansuregrin.service.impl;
 
 import org.fansuregrin.annotation.PageCheck;
-import org.fansuregrin.entity.PageResult;
-import org.fansuregrin.entity.Role;
-import org.fansuregrin.entity.RoleQuery;
+import org.fansuregrin.aop.PermissionAspect;
+import org.fansuregrin.entity.*;
 import org.fansuregrin.mapper.RoleMapper;
 import org.fansuregrin.service.RoleService;
+import org.fansuregrin.util.UserUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,6 +22,11 @@ public class RoleServiceImpl implements RoleService {
     @Override
     @PageCheck
     public PageResult<Role> listAdmin(RoleQuery query) {
+        Short scope = PermissionAspect.getScope();
+        if (RoleMenu.SCOPE_SELF.equals(scope)) {
+            User loginUser = UserUtil.getLoginUser();
+            query.setName(loginUser.getRole().getName());
+        }
         int total = roleMapper.count(query);
         List<Role> roles = roleMapper.selectLimit(query);
         return new PageResult<>(total, roles);

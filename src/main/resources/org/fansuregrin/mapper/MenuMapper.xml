@@ -10,7 +10,7 @@
     JOIN user u ON r.id = u.role_id AND u.id = #{userId}
   </select>
   <select id="selectIncludeSub" resultType="org.fansuregrin.entity.Menu">
-    SELECT m.id, m.name, m.code, m.parent_id, m.ancestors, m.type
+    SELECT m.id, m.name, m.code, m.parent_id, m.ancestors, m.type, rm.scope
     FROM (SELECT id FROM menu WHERE code = #{code}) m1
     JOIN menu m ON m.code = #{code} OR FIND_IN_SET(m1.id, m.ancestors)
     JOIN role_menu rm ON m.id = rm.menu_id

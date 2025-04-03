@@ -119,8 +119,10 @@ public class UserServiceImpl implements UserService {
             }
         }
         // 非管理员无法更新用户的角色
-        if (user.getRoleId() != null) {
-            if (loginUser.getRoleId() != Role.ADMINISTRATOR) {
+        Integer newRoleId = user.getRoleId();
+        if (newRoleId != null) {
+            if (loginUser.getRoleId() != Role.ADMINISTRATOR &&
+                !newRoleId.equals(oldUser.getRoleId())) {
                 throw new PermissionException("没有权限更新用户的角色");
             }
         }
