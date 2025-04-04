@@ -56,6 +56,9 @@ public class User {
     private Integer roleId;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String avatar;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @Null(groups = ValidateGroup.Crud.Update.Password.class, message = "该接口只能更新密码")
     private LocalDateTime createTime;
 

@@ -42,6 +42,7 @@ CREATE TABLE `user`
     `modify_time` DATETIME     NOT NULL DEFAULT NOW(),
     `email`       VARCHAR(255)          DEFAULT NULL,
     `realname`    VARCHAR(255)          DEFAULT NULL,
+    `avatar`      VARCHAR(500)          DEFAULT NULL,
     `role_id`     INT          NOT NULL DEFAULT 4,
     `delete_flag` CHAR(1)      NOT NULL DEFAULT '0',
     PRIMARY KEY (`id`),
