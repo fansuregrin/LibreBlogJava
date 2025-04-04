@@ -16,3 +16,9 @@ logging:
 jwt:
   expires-in: 3600000
   secret: 7c8c525f-68f8-4647-894c-35daabe3f00b
+aliyun:
+  oss:
+    endpoint: https://oss-cn-hangzhou.aliyuncs.com
+    bucket-name: libreblog
+    access-key-id: ${ALIYUN_OSS_ACCESS_KEY_ID}
+    access-key-secret: ${ALIYUN_OSS_ACCESS_KEY_SECRET}
