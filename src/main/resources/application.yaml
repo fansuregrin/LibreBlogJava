@@ -6,6 +6,12 @@ spring:
     url: jdbc:mysql://172.24.32.149:3307/libre_blog
     username: fansuregrin
     password: Fg12345#
+  data:
+    redis:
+      host: 172.24.32.149
+      port: 6379
+      database: 0
+      password: 123456
 mybatis:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
