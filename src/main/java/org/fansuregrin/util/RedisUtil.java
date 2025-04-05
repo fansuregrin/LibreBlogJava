@@ -85,6 +85,9 @@ public class RedisUtil {
     }
 
     public <T> void setMap(final String key, final Map<String, T> data) {
+        if (redisTemplate.hasKey(key)) {
+            redisTemplate.delete(key);
+        }
         if (data != null) {
             redisTemplate.opsForHash().putAll(key, data);
         }
@@ -93,6 +96,11 @@ public class RedisUtil {
     public <T> Map<String, T> getMap(final String key) {
         HashOperations<String, String, T> hashOperations = redisTemplate.opsForHash();
         return hashOperations.entries(key);
+    }
+
+    public <T> void setMapValue(final String key, final String hKey, final T hValue) {
+        HashOperations<String, String, T> hashOperations = redisTemplate.opsForHash();
+        hashOperations.put(key, hKey, hValue);
     }
 
     public <T> T getMapValue(final String key, final String hKey) {

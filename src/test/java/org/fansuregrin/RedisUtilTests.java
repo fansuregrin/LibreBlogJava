@@ -56,9 +56,15 @@ public class RedisUtilTests {
         for (int i=0; i<5; ++i) {
             value.put("k" + i, i);
         }
-        redisUtil.setMap("test:map", value);
-        Map<String, Integer> valueFromDb = redisUtil.getMap("test:map");
+        String key = "test:map";
+        redisUtil.setMap(key, value);
+        Map<String, Integer> valueFromDb = redisUtil.getMap(key);
         Assertions.assertEquals(value, valueFromDb);
+
+        String hKey = "k5";
+        Integer hValue = 5;
+        redisUtil.setMapValue(key, hKey, hValue);
+        Assertions.assertEquals(hValue, redisUtil.getMapValue(key, hKey));
     }
 
 }
