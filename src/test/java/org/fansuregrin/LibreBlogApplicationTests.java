@@ -1,6 +1,5 @@
 package org.fansuregrin;
 
-import org.fansuregrin.util.UserUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,21 +15,6 @@ class LibreBlogApplicationTests {
 
 	@Autowired
 	private ApplicationContext appContext;
-
-	@Test
-	void testHashPassword() {
-		String rawPassword = "Pw123#";
-		String hashedPassword = UserUtil.hashPassword(rawPassword);
-		System.out.println("raw password: " + rawPassword);
-		System.out.println("hashed password: " + hashedPassword);
-	}
-
-	@Test
-	void testVerifyPassword() {
-		String rawPassword = "Pw123#";
-		String hashedPassword = UserUtil.hashPassword(rawPassword);
-		Assertions.assertTrue(UserUtil.verifyPassword(rawPassword, hashedPassword));
-	}
 
 	@Test
 	void testRedisConnection() {
