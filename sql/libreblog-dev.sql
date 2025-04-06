@@ -251,7 +251,48 @@ INSERT INTO role_menu (role_id, menu_id, scope) VALUES
 -- 默认密码：Pw123#
 SET @password = '169EAD658AA375192BFECCFE28F2F275C59574B3CF3BFCFA6727441FE5E89B30F42B89BC19598910BA2EE135BB3ECA08';
 INSERT INTO `user` (`username`, `password`, `email`, `realname`, `role_id`)
-VALUES ('admin', @password, 'admin@example.com', '管理员', @administrator);
+VALUES ('bobwood', @password, 'bobwood@ouc.edu.cn', 'Bob Wood', @administrator),
+       ('xiaohua', @password, 'xiaohua@bnu.edu.cn', '小华', @editor),
+       ('xiaomo', @password, 'xiaoyan@bnu.edu.cn', '小莫', @editor),
+       ('tom1997', @password, 'ts@gmail.com', 'Tom Smith', @contributor),
+       ('dijia', @password, 'dijia@m78.galaxy', '迪迪', @subscriber);
 
 INSERT INTO category (`id`, `name`, `slug`)
-VALUES (1, '未分类', 'uncategoried');
+VALUES (1, '未分类', 'uncategoried'),
+       (2, '诗歌', 'poem'),
+       (3, '新闻', 'news'),
+       (4, '小说', 'novel'),
+       (5, '散文', 'essay'),
+       (6, '故事', 'story');
+
+INSERT INTO tag (`name`, `slug`)
+VALUES ('宋词', 'song-ci'),
+       ('五言诗', 'wu-yan-shi'),
+       ('七言诗', 'qi-yan-shi'),
+       ('Python', 'python'),
+       ('前端', 'front-end'),
+       ('数据库', 'db'),
+       ('刘慈欣', 'liu-ci-xin'),
+       ('阿瑟-克拉克', 'Arthur-Clarke'),
+       ('人民日报', 'ren-min-ri-bao'),
+       ('格林童话', 'green-brother');
+
+delimiter //
+CREATE PROCEDURE `genArticles`()
+BEGIN
+    declare i int default 1;
+    declare time datetime default '2021-7-1 00:00:00';
+
+    while i <= 100
+    do
+        INSERT INTO article
+        (`title`, `author_id`, `category_id`, `content`, `create_time`, `modify_time`)
+        VALUES (CONCAT('标题', i), FLOOR(RAND() * 5) + 1, FLOOR(RAND() * 6) + 1, CONCAT('我是内容', i), time, time);
+        set i = i + 1;
+        set time = DATE_ADD(time, INTERVAL FLOOR(RAND() * 1000000) + 1 SECOND);
+    end while;
+END
+//
+delimiter ;
+
+CALL genArticles();

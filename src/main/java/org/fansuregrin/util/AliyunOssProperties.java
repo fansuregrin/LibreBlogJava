@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 @Data
 @Component
-@ConfigurationProperties(prefix = "aliyun.oss")
+@ConfigurationProperties(prefix = "oss.aliyun")
 public class AliyunOssProperties {
 
     private String endpoint;

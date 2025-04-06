@@ -16,9 +16,6 @@ mybatis:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     map-underscore-to-camel-case: true
-logging:
-  level:
-    org.fansuregrin: debug
 token:
   header: "Authorization"
   expire-time: 1800000 # 过期时间，单位为毫秒

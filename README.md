@@ -2,7 +2,9 @@
 
 LibreBlog is a blogging platform powered by the Spring framework for its backend API.
 
-## API Endpoints
+<details>
+<summary>See api endpoints</summary>
+
 - Article
   - GET `/articles/list`
   - GET `/articles/{id}`
@@ -43,6 +45,45 @@ LibreBlog is a blogging platform powered by the Spring framework for its backend
 - Menu
   - GET `/admin/menus`
   - GET `/admin/menus/me`
+</details>
 
 ## Setup, Build, and Run
+
+### Setup
+1. Mysql
+   - Run [libreblog.sql](./sql/libreblog.sql) in mysql shell.
+   - Update the MySQL configuration to yours under `spring.datasource` in [application.yaml](./src/main/resources/application.yaml).
+2. Redis
+   - Update the Redis configuration to yours under `spring.data.redis` in [application.yaml](./src/main/resources/application.yaml).
+3. OSS
+   - Aliyun OSS: Update the configuration to yours under `oss.aliyun` in [application.yaml](./src/main/resources/application.yaml).
+4. JDK 17+
+5. Maven
+
+### Build
+```shell
+mvn package
+```
+or skip tests:
+```shell
+mvn package -DskipTests
+```
+
+### Run
+1.On Windows:
+```powershell
+$env:ALIYUN_OSS_ACCESS_KEY_ID = "YOURS"
+$env:ALIYUN_OSS_ACCESS_KEY_SECRET = "YOURS"
+java -jar <the-jar-file>
+```
+
+2.On Linux
+```shell
+export ALIYUN_OSS_ACCESS_KEY_ID="YOURS"
+export ALIYUN_OSS_ACCESS_KEY_SECRET="YOURS"
+java -jar <the-jar-file>
+```
+
 ## Acknowledgements
+- IntelliJ IDEA
+- ApiPost
