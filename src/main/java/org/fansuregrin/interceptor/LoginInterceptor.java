@@ -1,13 +1,12 @@
 package org.fansuregrin.interceptor;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.fansuregrin.entity.LoginInfo;
 import org.fansuregrin.entity.User;
-import org.fansuregrin.exception.LoginException;
 import org.fansuregrin.mapper.UserMapper;
-import org.fansuregrin.util.JwtUtil;
+import org.fansuregrin.service.TokenService;
+import org.fansuregrin.util.RedisUtil;
 import org.fansuregrin.util.UserUtil;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
@@ -16,11 +15,13 @@ import org.springframework.web.servlet.HandlerInterceptor;
 @Component
 public class LoginInterceptor implements HandlerInterceptor {
 
-    private final JwtUtil jwtUtil;
+    private final TokenService tokenService;
+    private final RedisUtil redisUtil;
     private final UserMapper userMapper;
 
-    public LoginInterceptor(JwtUtil jwtUtil, UserMapper userMapper) {
-        this.jwtUtil = jwtUtil;
+    public LoginInterceptor(TokenService tokenService, RedisUtil redisUtil, UserMapper userMapper) {
+        this.tokenService = tokenService;
+        this.redisUtil = redisUtil;
         this.userMapper = userMapper;
     }
 
@@ -29,22 +30,13 @@ public class LoginInterceptor implements HandlerInterceptor {
         @NonNull HttpServletRequest request,
         @NonNull HttpServletResponse response, @NonNull Object handler
     ) {
-        String header = request.getHeader("Authorization");
-        String token;
-        if (header == null || !header.startsWith("Bearer ")) {
-            throw new LoginException("请先登录");
-        }
-        token = header.substring(7);
-        Claims claims;
-        try {
-            claims = jwtUtil.parseJwt(token);
-        } catch (JwtException e) {
-            throw new LoginException("登录失效，请重新登录", e);
-        }
-        Integer uid = (Integer) claims.get("uid");
-        User loginUser = userMapper.select(uid);
+        LoginInfo loginInfo = tokenService.getLoginInfo(request);
+        int uid = loginInfo.getUid();
+        String key = "user:" + uid;
+        User loginUser = redisUtil.get(key);
         if (loginUser == null) {
-            throw new LoginException("登录失效，请重新登录");
+            loginUser = userMapper.select(uid);
+            redisUtil.set(key, loginUser);
         }
         UserUtil.setLoginUser(loginUser);
         return true;

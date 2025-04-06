@@ -1,14 +1,9 @@
 package org.fansuregrin.util;
 
-import org.springframework.data.redis.core.HashOperations;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.SetOperations;
+import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Component;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("unchecked")
@@ -57,6 +52,18 @@ public class RedisUtil {
 
     public boolean delete(final Collection<String> keys) {
         return redisTemplate.delete(keys) > 0;
+    }
+
+    public void deleteWithPrefix(String prefix) {
+        List<String> keys = new ArrayList<>();
+        ScanOptions scanOptions = ScanOptions.scanOptions().match(prefix + "*")
+            .count(1000).build();
+        try (Cursor<String> cursor = redisTemplate.scan(scanOptions)) {
+            cursor.forEachRemaining(keys::add);
+        }
+        if (!keys.isEmpty()) {
+            delete(keys);
+        }
     }
 
     public <T> void setList(final String key, final List<T> data) {

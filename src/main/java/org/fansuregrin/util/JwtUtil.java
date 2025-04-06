@@ -3,29 +3,25 @@ package org.fansuregrin.util;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
 import java.util.Map;
 
 @Component
 public class JwtUtil {
 
     private final SecretKey SECRET_KEY;
-    private final Long EXPIRES_IN;
 
-    public JwtUtil(JwtProperties jwtProperties) {
+    public JwtUtil(@Value("${token.secret}") String secret) {
         this.SECRET_KEY = Keys.hmacShaKeyFor(
-            jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8));
-        this.EXPIRES_IN = jwtProperties.getExpiresIn();
+            secret.getBytes(StandardCharsets.UTF_8));
     }
 
     public String generateJwt(Map<String, Object> claims) {
-
         return Jwts.builder().signWith(SECRET_KEY).claims(claims)
-            .expiration(new Date(System.currentTimeMillis() + EXPIRES_IN))
             .compact();
     }
 

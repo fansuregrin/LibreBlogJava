@@ -19,8 +19,9 @@ mybatis:
 logging:
   level:
     org.fansuregrin: debug
-jwt:
-  expires-in: 3600000
+token:
+  header: "Authorization"
+  expire-time: 1800000 # 过期时间，单位为毫秒
   secret: 7c8c525f-68f8-4647-894c-35daabe3f00b
 aliyun:
   oss:

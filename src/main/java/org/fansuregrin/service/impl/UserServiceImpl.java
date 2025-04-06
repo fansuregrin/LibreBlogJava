@@ -9,17 +9,16 @@ import org.fansuregrin.exception.RequestDataException;
 import org.fansuregrin.mapper.ArticleMapper;
 import org.fansuregrin.mapper.ArticleTagMapper;
 import org.fansuregrin.mapper.UserMapper;
+import org.fansuregrin.service.TokenService;
 import org.fansuregrin.service.UserService;
-import org.fansuregrin.util.JwtUtil;
+import org.fansuregrin.util.RedisUtil;
 import org.fansuregrin.util.UserUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 @Service
@@ -27,18 +26,19 @@ public class UserServiceImpl implements UserService {
 
     private final UserMapper userMapper;
 
-    private final JwtUtil jwtUtil;
     private final ArticleTagMapper articleTagMapper;
     private final ArticleMapper articleMapper;
+    private final TokenService tokenService;
+    private final RedisUtil redisUtil;
 
     public UserServiceImpl(
-        UserMapper userMapper, JwtUtil jwtUtil,
-        ArticleTagMapper articleTagMapper, ArticleMapper articleMapper
-    ) {
+        UserMapper userMapper, ArticleTagMapper articleTagMapper,
+        ArticleMapper articleMapper, TokenService tokenService, RedisUtil redisUtil) {
         this.userMapper = userMapper;
-        this.jwtUtil = jwtUtil;
         this.articleTagMapper = articleTagMapper;
         this.articleMapper = articleMapper;
+        this.tokenService = tokenService;
+        this.redisUtil = redisUtil;
     }
 
     @Override
@@ -47,9 +47,9 @@ public class UserServiceImpl implements UserService {
         User userInDb = userMapper.selectByUsername(user.getUsername());
         if (userInDb != null &&
             UserUtil.verifyPassword(user.getPassword(), userInDb.getPassword())) {
-            Map<String, Object> payload = new HashMap<>();
-            payload.put("uid", userInDb.getId());
-            token = jwtUtil.generateJwt(payload);
+            LoginInfo loginInfo = new LoginInfo();
+            loginInfo.setUid(userInDb.getId());
+            token = tokenService.createToken(loginInfo);
         }
         return token;
     }
@@ -128,6 +128,7 @@ public class UserServiceImpl implements UserService {
         }
         user.setPassword(null);
         userMapper.update(user);
+        redisUtil.delete("user:" + user.getId());
     }
 
     @Override
@@ -153,6 +154,7 @@ public class UserServiceImpl implements UserService {
         }
         user.setPassword(UserUtil.hashPassword(user.getPassword()));
         userMapper.update(user);
+        tokenService.removeLoginInfo(user.getId());
     }
 
     @Override
@@ -196,6 +198,7 @@ public class UserServiceImpl implements UserService {
         articleMapper.deleteByUsers(ids);
         articleTagMapper.deleteByUsers(ids);
         userMapper.delete(ids);
+        ids.forEach(tokenService::removeLoginInfo);
     }
 
 }
