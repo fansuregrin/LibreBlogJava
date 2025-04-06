@@ -13,6 +13,7 @@ LibreBlog is a blogging platform powered by the Spring framework for its backend
 - User
   - POST `/login`
   - POST `/register`
+  - GET `/logout`
   - GET `/users/{id}`
   - GET `/admin/users/list`
   - GET `/admin/users/me`
@@ -38,7 +39,10 @@ LibreBlog is a blogging platform powered by the Spring framework for its backend
   - PUT `/admin/tags`
   - DELETE `/admin/tags`
 - Role
+  - GET `/admin/roles/list`
 - Menu
+  - GET `/admin/menus`
+  - GET `/admin/menus/me`
 
 ## Setup, Build, and Run
 ## Acknowledgements

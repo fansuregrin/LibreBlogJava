@@ -1,6 +1,5 @@
 package org.fansuregrin.service;
 
-import com.mysql.cj.log.Log;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;

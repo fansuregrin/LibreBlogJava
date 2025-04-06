@@ -2,10 +2,12 @@ package org.fansuregrin.util;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.fansuregrin.entity.LoginInfo;
 import org.fansuregrin.entity.User;
 
 public class UserUtil {
     private static final ThreadLocal<User> userHolder = new ThreadLocal<>();
+    private static final ThreadLocal<LoginInfo> loginInfoHolder = new ThreadLocal<>();
 
     public static User getLoginUser() {
         return userHolder.get();
@@ -17,6 +19,18 @@ public class UserUtil {
 
     public static void removeUser() {
         userHolder.remove();
+    }
+
+    public static LoginInfo getLoginInfo() {
+        return loginInfoHolder.get();
+    }
+
+    public static void setLoginInfo(LoginInfo loginInfo) {
+        loginInfoHolder.set(loginInfo);
+    }
+
+    public static void removeLoginInfo() {
+        loginInfoHolder.remove();
     }
 
     public static String hashPassword(String rawPassword) {

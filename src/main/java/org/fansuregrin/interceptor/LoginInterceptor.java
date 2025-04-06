@@ -31,6 +31,7 @@ public class LoginInterceptor implements HandlerInterceptor {
         @NonNull HttpServletResponse response, @NonNull Object handler
     ) {
         LoginInfo loginInfo = tokenService.getLoginInfo(request);
+        UserUtil.setLoginInfo(loginInfo);
         int uid = loginInfo.getUid();
         String key = "user:" + uid;
         User loginUser = redisUtil.get(key);
@@ -48,6 +49,7 @@ public class LoginInterceptor implements HandlerInterceptor {
         @NonNull Object handler, Exception ex
     ) {
         UserUtil.removeUser();
+        UserUtil.removeLoginInfo();
     }
 
 }

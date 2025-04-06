@@ -1,11 +1,10 @@
 package org.fansuregrin.controller;
 
 import org.fansuregrin.annotation.MenuPermissionCheck;
-import org.fansuregrin.entity.ApiResponse;
-import org.fansuregrin.entity.PageResult;
-import org.fansuregrin.entity.User;
-import org.fansuregrin.entity.UserQuery;
+import org.fansuregrin.entity.*;
+import org.fansuregrin.service.TokenService;
 import org.fansuregrin.service.UserService;
+import org.fansuregrin.util.UserUtil;
 import org.fansuregrin.validation.ValidateGroup;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -17,9 +16,11 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final TokenService tokenService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, TokenService tokenService) {
         this.userService = userService;
+        this.tokenService = tokenService;
     }
 
     @PostMapping("/login")
@@ -39,6 +40,12 @@ public class UserController {
         @RequestBody @Validated(ValidateGroup.Crud.Create.class) User user) {
         userService.register(user);
         return ApiResponse.success("注册成功", null);
+    }
+
+    @GetMapping("/logout")
+    public ApiResponse logout() {
+        tokenService.removeLoginInfo(UserUtil.getLoginInfo());
+        return ApiResponse.success();
     }
 
     @GetMapping("/users/{id}")
