@@ -17,7 +17,7 @@
     <collection property="tags" ofType="org.fansuregrin.entity.Tag" resultMap="tagResult"/>
   </resultMap>
   <resultMap id="userResult" type="org.fansuregrin.entity.User">
-    <id property="id" column="user_id"/>
+    <id property="id" column="author_id"/>
     <result property="username" column="user_username"/>
     <result property="realname" column="user_realname"/>
   </resultMap>
@@ -55,7 +55,7 @@
   </select>
   <select id="selectLimit" resultMap="articleResult">
     SELECT a.id, a.title, a.excerpt, a.create_time, a.modify_time,
-           u.id AS user_id, u.username AS user_username, u.realname AS user_realname,
+           u.id AS author_id, u.username AS user_username, u.realname AS user_realname,
            c.id AS category_id, c.slug AS category_slug, c.name AS category_name,
            t.id AS tag_id, t.slug AS tag_slug, t.name AS tag_name
     FROM (<include refid="selectArticleIds"/>) sub
@@ -81,7 +81,7 @@
   </update>
   <select id="select" resultMap="articleResult">
     SELECT a.id, a.title, a.excerpt, a.content, a.create_time, a.modify_time,
-           u.id AS user_id, u.username AS user_username, u.realname AS user_realname,
+           u.id AS author_id, u.username AS user_username, u.realname AS user_realname,
            c.id AS category_id, c.slug AS category_slug, c.name AS category_name,
            t.id AS tag_id, t.slug AS tag_slug, t.name AS tag_name
     FROM article a
