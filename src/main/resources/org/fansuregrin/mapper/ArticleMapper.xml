@@ -5,7 +5,7 @@
 <mapper namespace="org.fansuregrin.mapper.ArticleMapper">
   <resultMap id="articleResult" type="org.fansuregrin.entity.Article">
     <id property="id" column="id"/>
-    <result property="authorId" column="user_id"/>
+    <result property="authorId" column="author_id"/>
     <result property="categoryId" column="category_id"/>
     <result property="title" column="title"/>
     <result property="excerpt" column="excerpt"/>
