@@ -4,11 +4,13 @@ import org.fansuregrin.annotation.PageCheck;
 import org.fansuregrin.aop.PermissionAspect;
 import org.fansuregrin.entity.*;
 import org.fansuregrin.exception.DuplicateResourceException;
+import org.fansuregrin.exception.LoginException;
 import org.fansuregrin.exception.PermissionException;
 import org.fansuregrin.exception.RequestDataException;
 import org.fansuregrin.mapper.ArticleMapper;
 import org.fansuregrin.mapper.ArticleTagMapper;
 import org.fansuregrin.mapper.UserMapper;
+import org.fansuregrin.service.CaptchaService;
 import org.fansuregrin.service.TokenService;
 import org.fansuregrin.service.UserService;
 import org.fansuregrin.util.RedisUtil;
@@ -30,19 +32,24 @@ public class UserServiceImpl implements UserService {
     private final ArticleMapper articleMapper;
     private final TokenService tokenService;
     private final RedisUtil redisUtil;
+    private final CaptchaService captchaService;
 
     public UserServiceImpl(
         UserMapper userMapper, ArticleTagMapper articleTagMapper,
-        ArticleMapper articleMapper, TokenService tokenService, RedisUtil redisUtil) {
+        ArticleMapper articleMapper, TokenService tokenService, RedisUtil redisUtil, CaptchaService captchaService) {
         this.userMapper = userMapper;
         this.articleTagMapper = articleTagMapper;
         this.articleMapper = articleMapper;
         this.tokenService = tokenService;
         this.redisUtil = redisUtil;
+        this.captchaService = captchaService;
     }
 
     @Override
     public String login(User user) {
+        if (!captchaService.verifyCaptcha(user.getUuid(), user.getVerifyCode())) {
+            throw new RequestDataException("验证码错误");
+        }
         String token = null;
         User userInDb = userMapper.selectByUsername(user.getUsername());
         if (userInDb != null &&

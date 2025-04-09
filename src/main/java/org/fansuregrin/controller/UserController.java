@@ -2,6 +2,7 @@ package org.fansuregrin.controller;
 
 import org.fansuregrin.annotation.MenuPermissionCheck;
 import org.fansuregrin.entity.*;
+import org.fansuregrin.service.CaptchaService;
 import org.fansuregrin.service.TokenService;
 import org.fansuregrin.service.UserService;
 import org.fansuregrin.util.UserUtil;
@@ -11,16 +12,19 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 public class UserController {
 
     private final UserService userService;
     private final TokenService tokenService;
+    private final CaptchaService captchaService;
 
-    public UserController(UserService userService, TokenService tokenService) {
+    public UserController(UserService userService, TokenService tokenService, CaptchaService captchaService) {
         this.userService = userService;
         this.tokenService = tokenService;
+        this.captchaService = captchaService;
     }
 
     @PostMapping("/login")
@@ -46,6 +50,12 @@ public class UserController {
     public ApiResponse logout() {
         tokenService.removeLoginInfo(UserUtil.getLoginInfo());
         return ApiResponse.success();
+    }
+
+    @GetMapping("/captcha")
+    public ApiResponse getCaptcha() {
+        Captcha captcha = captchaService.generateCaptcha();
+        return ApiResponse.success(captcha);
     }
 
     @GetMapping("/users/{id}")

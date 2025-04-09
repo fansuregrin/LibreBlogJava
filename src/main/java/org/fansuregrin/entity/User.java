@@ -76,4 +76,12 @@ public class User {
     @Password(groups = ValidateGroup.Crud.Update.Password.class,
         message = "密码长度仅限6~20且必须包括大小写字母、数字和特殊符号，不能包含空白字符")
     private String oldPassword;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @NotNull(groups = {ValidateGroup.Crud.Query.Login.class}, message = "缺失uuid字段")
+    private String uuid;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @NotNull(groups = {ValidateGroup.Crud.Query.Login.class}, message = "缺失verifyCode字段")
+    private String verifyCode;
 }
