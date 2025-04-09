@@ -4,7 +4,9 @@ import jakarta.validation.groups.Default;
 
 public interface ValidateGroup extends Default {
     interface Crud extends ValidateGroup {
-        interface Create extends Crud {}
+        interface Create extends Crud {
+            interface Register extends Create {}
+        }
 
         interface Query extends Crud {
             interface Login extends Query {}

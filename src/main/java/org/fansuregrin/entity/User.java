@@ -78,10 +78,12 @@ public class User {
     private String oldPassword;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @NotNull(groups = {ValidateGroup.Crud.Query.Login.class}, message = "缺失uuid字段")
+    @NotNull(groups = {ValidateGroup.Crud.Query.Login.class,
+        ValidateGroup.Crud.Create.Register.class}, message = "缺失uuid字段")
     private String uuid;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @NotNull(groups = {ValidateGroup.Crud.Query.Login.class}, message = "缺失verifyCode字段")
+    @NotNull(groups = {ValidateGroup.Crud.Query.Login.class,
+        ValidateGroup.Crud.Create.Register.class}, message = "缺失verifyCode字段")
     private String verifyCode;
 }

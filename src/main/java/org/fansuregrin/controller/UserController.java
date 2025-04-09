@@ -41,7 +41,7 @@ public class UserController {
 
     @PostMapping("/register")
     public ApiResponse register(
-        @RequestBody @Validated(ValidateGroup.Crud.Create.class) User user) {
+        @RequestBody @Validated(ValidateGroup.Crud.Create.Register.class) User user) {
         userService.register(user);
         return ApiResponse.success("注册成功", null);
     }

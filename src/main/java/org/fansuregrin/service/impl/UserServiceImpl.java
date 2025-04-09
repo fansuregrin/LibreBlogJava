@@ -47,9 +47,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String login(User user) {
-        if (!captchaService.verifyCaptcha(user.getUuid(), user.getVerifyCode())) {
-            throw new RequestDataException("验证码错误");
-        }
+        checkVerifyCode(user);
         String token = null;
         User userInDb = userMapper.selectByUsername(user.getUsername());
         if (userInDb != null &&
@@ -64,6 +62,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(rollbackFor = {Exception.class})
     public void register(User user) {
+        checkVerifyCode(user);
         user.setPassword(UserUtil.hashPassword(user.getPassword()));
         user.setCreateTime(LocalDateTime.now());
         user.setModifyTime(LocalDateTime.now());
@@ -206,6 +205,12 @@ public class UserServiceImpl implements UserService {
         articleTagMapper.deleteByUsers(ids);
         userMapper.delete(ids);
         ids.forEach(tokenService::removeLoginInfo);
+    }
+
+    private void checkVerifyCode(User user) {
+        if (!captchaService.verifyCaptcha(user.getUuid(), user.getVerifyCode())) {
+            throw new RequestDataException("验证码错误");
+        }
     }
 
 }
