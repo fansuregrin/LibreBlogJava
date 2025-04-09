@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
         user.setPassword(UserUtil.hashPassword(user.getPassword()));
         user.setCreateTime(LocalDateTime.now());
         user.setModifyTime(LocalDateTime.now());
-        if (StringUtils.hasText(user.getRealname())) {
+        if (!StringUtils.hasText(user.getRealname())) {
             user.setRealname(user.getUsername());
         }
         if (user.getRoleId() == null || user.getRoleId() <= 0) {
