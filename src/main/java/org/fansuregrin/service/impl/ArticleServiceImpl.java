@@ -2,6 +2,7 @@ package org.fansuregrin.service.impl;
 
 import org.fansuregrin.annotation.PageCheck;
 import org.fansuregrin.aop.PermissionAspect;
+import org.fansuregrin.dto.CategoryArticleCount;
 import org.fansuregrin.entity.*;
 import org.fansuregrin.exception.PermissionException;
 import org.fansuregrin.mapper.ArticleMapper;
@@ -57,6 +58,11 @@ public class ArticleServiceImpl implements ArticleService {
         int total = articleMapper.count(query);
         List<Article> articles = articleMapper.selectLimit(query);
         return new PageResult<>(total, articles);
+    }
+
+    @Override
+    public List<CategoryArticleCount> articleCountPerCategory() {
+        return articleMapper.groupByCategory();
     }
 
     @Override

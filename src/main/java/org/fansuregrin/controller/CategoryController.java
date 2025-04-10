@@ -1,10 +1,12 @@
 package org.fansuregrin.controller;
 
 import org.fansuregrin.annotation.MenuPermissionCheck;
+import org.fansuregrin.dto.CategoryArticleCount;
 import org.fansuregrin.entity.ApiResponse;
 import org.fansuregrin.entity.Category;
 import org.fansuregrin.entity.CategoryQuery;
 import org.fansuregrin.entity.PageResult;
+import org.fansuregrin.service.ArticleService;
 import org.fansuregrin.service.CategoryService;
 import org.fansuregrin.validation.ValidateGroup;
 import org.springframework.validation.annotation.Validated;
@@ -16,9 +18,11 @@ import java.util.List;
 public class CategoryController {
 
     private final CategoryService categoryService;
+    private final ArticleService articleService;
 
-    public CategoryController(CategoryService categoryService) {
+    public CategoryController(CategoryService categoryService, ArticleService articleService) {
         this.categoryService = categoryService;
+        this.articleService = articleService;
     }
 
     @GetMapping("/categories/all")
@@ -44,6 +48,12 @@ public class CategoryController {
     public ApiResponse listAdmin(CategoryQuery query) {
         PageResult<Category> data = categoryService.listAdmin(query);
         return ApiResponse.success(data);
+    }
+
+    @GetMapping("admin/categories/article-count")
+    public ApiResponse articleCount() {
+        List<CategoryArticleCount> articleCounts = articleService.articleCountPerCategory();
+        return ApiResponse.success(articleCounts);
     }
 
     @PostMapping("/admin/categories")

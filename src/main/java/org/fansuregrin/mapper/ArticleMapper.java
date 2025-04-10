@@ -1,6 +1,7 @@
 package org.fansuregrin.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.fansuregrin.dto.CategoryArticleCount;
 import org.fansuregrin.entity.Article;
 import org.fansuregrin.entity.ArticleQuery;
 
@@ -26,5 +27,7 @@ public interface ArticleMapper {
     void insert(Article article);
 
     Article selectForUpdate(int id);
+
+    List<CategoryArticleCount> groupByCategory();
 
 }

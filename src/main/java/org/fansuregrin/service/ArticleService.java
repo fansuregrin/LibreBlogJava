@@ -1,5 +1,6 @@
 package org.fansuregrin.service;
 
+import org.fansuregrin.dto.CategoryArticleCount;
 import org.fansuregrin.entity.*;
 
 import java.util.List;
@@ -11,6 +12,8 @@ public interface ArticleService {
     Article get(int id);
 
     PageResult<Article> listAdmin(ArticleQuery query);
+
+    List<CategoryArticleCount> articleCountPerCategory();
 
     void add(Article article);
 

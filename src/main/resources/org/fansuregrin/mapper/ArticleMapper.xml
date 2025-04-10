@@ -117,4 +117,10 @@
     SELECT id, title, excerpt, author_id, category_id, create_time, modify_time
     FROM article WHERE delete_flag = '0' AND id = #{id} FOR UPDATE
   </select>
+  <select id="groupByCategory" resultType="org.fansuregrin.dto.CategoryArticleCount">
+    SELECT a.category_id, COUNT(a.id) AS article_num, c.name AS category_name,
+      c.slug AS category_slug FROM article a
+    JOIN category c ON a.category_id = c.id AND a.delete_flag = '0' AND c.delete_flag = '0'
+    GROUP BY a.category_id
+  </select>
 </mapper>
