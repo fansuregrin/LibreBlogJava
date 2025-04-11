@@ -4,6 +4,7 @@ import com.pig4cloud.captcha.SpecCaptcha;
 import org.fansuregrin.constant.Constants;
 import org.fansuregrin.dto.Captcha;
 import org.fansuregrin.util.RedisUtil;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -11,6 +12,9 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 public class CaptchaService {
+
+    @Value("${libreblog.captcha.expire-time}")
+    private long expireTime;
 
     private final RedisUtil redisUtil;
 
@@ -22,7 +26,8 @@ public class CaptchaService {
         SpecCaptcha specCaptcha = new SpecCaptcha(130, 48, 4);
         String verCode = specCaptcha.text().toLowerCase();
         String uuid = UUID.randomUUID().toString();
-        redisUtil.set(Constants.CAPTCHA_REDIS_KEY_PREFIX + uuid, verCode, 3, TimeUnit.MINUTES);
+        redisUtil.set(Constants.CAPTCHA_REDIS_KEY_PREFIX + uuid, verCode,
+            expireTime, TimeUnit.MILLISECONDS);
         return new Captcha(specCaptcha.toBase64(), uuid);
     }
 

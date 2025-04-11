@@ -27,10 +27,10 @@ public class TokenService {
 
     private final JwtUtil jwtUtil;
 
-    @Value("${token.expire-time}")
+    @Value("${libreblog.token.expire-time}")
     private long expireTime;
 
-    @Value("${token.header}")
+    @Value("${libreblog.token.header}")
     private String headerName;
 
     public TokenService(RedisUtil redisUtil, JwtUtil jwtUtil) {

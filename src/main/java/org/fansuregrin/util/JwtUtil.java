@@ -15,7 +15,7 @@ public class JwtUtil {
 
     private final SecretKey SECRET_KEY;
 
-    public JwtUtil(@Value("${token.secret}") String secret) {
+    public JwtUtil(@Value("${libreblog.token.secret}") String secret) {
         this.SECRET_KEY = Keys.hmacShaKeyFor(
             secret.getBytes(StandardCharsets.UTF_8));
     }

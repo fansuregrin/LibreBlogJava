@@ -19,13 +19,16 @@ mybatis:
 logging:
   level:
     org.fansuregrin: debug
-token:
-  header: "Authorization"
-  expire-time: 1800000 # 过期时间，单位为毫秒
-  secret: 7c8c525f-68f8-4647-894c-35daabe3f00b
-oss:
-  aliyun:
-    endpoint: https://oss-cn-hangzhou.aliyuncs.com
-    bucket-name: libreblog
-    access-key-id: ${ALIYUN_OSS_ACCESS_KEY_ID}
-    access-key-secret: ${ALIYUN_OSS_ACCESS_KEY_SECRET}
+libreblog:
+  captcha:
+    expire-time: 180000 # 过期时间，单位为毫秒
+  token:
+    header: "Authorization"
+    expire-time: 1800000 # 过期时间，单位为毫秒
+    secret: ${TOKEN_SECRET}
+  oss:
+    aliyun:
+      endpoint: https://oss-cn-hangzhou.aliyuncs.com
+      bucket-name: libreblog
+      access-key-id: ${ALIYUN_OSS_ACCESS_KEY_ID}
+      access-key-secret: ${ALIYUN_OSS_ACCESS_KEY_SECRET}
