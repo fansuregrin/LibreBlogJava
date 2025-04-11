@@ -26,7 +26,7 @@ public class TagServiceImpl implements TagService {
     @Override
     @PageCheck
     public PageResult<Tag> listAdmin(TagQuery query) {
-        int total = tagMapper.count(query);
+        long total = tagMapper.count(query);
         List<Tag> tags = tagMapper.selectLimit(query);
         return new PageResult<>(total, tags);
     }

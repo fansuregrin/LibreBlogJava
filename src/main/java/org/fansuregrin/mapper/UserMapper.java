@@ -21,7 +21,7 @@ public interface UserMapper {
 
     void update(User user);
 
-    int count(UserQuery query);
+    long count(UserQuery query);
 
     List<User> selectLimit(UserQuery query);
 

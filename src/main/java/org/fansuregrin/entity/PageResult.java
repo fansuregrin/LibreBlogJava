@@ -8,7 +8,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class PageResult<T> {
-    Integer total;
+    Long total;
 
     List<T> items;
 }

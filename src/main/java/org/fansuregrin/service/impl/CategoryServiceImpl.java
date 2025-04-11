@@ -32,7 +32,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @PageCheck
     public PageResult<Category> listAdmin(CategoryQuery query) {
-        int total = categoryMapper.count(query);
+        long total = categoryMapper.count(query);
         List<Category> data = categoryMapper.selectLimit(query);
         return new PageResult<>(total, data);
     }

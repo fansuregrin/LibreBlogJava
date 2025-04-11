@@ -44,7 +44,7 @@
     INSERT INTO user (username, password, create_time, modify_time, email, realname, role_id, avatar)
     VALUE (#{username}, #{password}, NOW(), NOW(), #{email}, #{realname}, #{roleId}, #{avatar})
   </insert>
-  <select id="count" resultType="int">
+  <select id="count" resultType="long">
     SELECT COUNT(*)
     FROM user u
     <if test="roleId != null and roleId > 0">

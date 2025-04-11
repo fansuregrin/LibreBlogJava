@@ -12,7 +12,7 @@ public interface ArticleMapper {
 
     List<Article> selectLimit(ArticleQuery query);
 
-    int count(ArticleQuery query);
+    long count(ArticleQuery query);
 
     void resetCategoryId(List<Integer> categoryIds);
 

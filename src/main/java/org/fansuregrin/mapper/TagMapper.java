@@ -25,6 +25,6 @@ public interface TagMapper {
 
     void delete(List<Integer> ids);
 
-    int count(TagQuery query);
+    long count(TagQuery query);
 
 }

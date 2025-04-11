@@ -2,6 +2,7 @@ package org.fansuregrin.interceptor;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.fansuregrin.constant.Constants;
 import org.fansuregrin.entity.LoginInfo;
 import org.fansuregrin.entity.User;
 import org.fansuregrin.mapper.UserMapper;
@@ -33,7 +34,7 @@ public class LoginInterceptor implements HandlerInterceptor {
         LoginInfo loginInfo = tokenService.getLoginInfo(request);
         UserUtil.setLoginInfo(loginInfo);
         int uid = loginInfo.getUid();
-        String key = "user:" + uid;
+        String key = Constants.USER_REDIS_KEY_PREFIX + uid;
         User loginUser = redisUtil.get(key);
         if (loginUser == null) {
             loginUser = userMapper.select(uid);

@@ -49,7 +49,7 @@
     SELECT a1.id FROM article a1 <include refid="filterJoin"/> WHERE a1.delete_flag = '0'
     ORDER BY a1.modify_time DESC,a1.id LIMIT #{start},#{pageSize}
   </sql>
-  <select id="count" resultType="integer">
+  <select id="count" resultType="long">
     SELECT COUNT(a1.id) FROM article a1 <include refid="filterJoin"/>
     WHERE a1.delete_flag = '0';
   </select>

@@ -2,9 +2,9 @@ package org.fansuregrin.service.impl;
 
 import org.fansuregrin.annotation.PageCheck;
 import org.fansuregrin.aop.PermissionAspect;
+import org.fansuregrin.constant.Constants;
 import org.fansuregrin.entity.*;
 import org.fansuregrin.exception.DuplicateResourceException;
-import org.fansuregrin.exception.LoginException;
 import org.fansuregrin.exception.PermissionException;
 import org.fansuregrin.exception.RequestDataException;
 import org.fansuregrin.mapper.ArticleMapper;
@@ -134,7 +134,7 @@ public class UserServiceImpl implements UserService {
         }
         user.setPassword(null);
         userMapper.update(user);
-        redisUtil.delete("user:" + user.getId());
+        redisUtil.delete(Constants.USER_REDIS_KEY_PREFIX + user.getId());
     }
 
     @Override
@@ -175,7 +175,7 @@ public class UserServiceImpl implements UserService {
             query.setUsername(loginUser.getUsername());
         }
 
-        int total = userMapper.count(query);
+        long total = userMapper.count(query);
         List<User> users = userMapper.selectLimit(query);
         for (User user : users) {
             user.setPassword(null);

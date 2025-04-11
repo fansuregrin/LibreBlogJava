@@ -27,7 +27,7 @@ public class RoleServiceImpl implements RoleService {
             User loginUser = UserUtil.getLoginUser();
             query.setName(loginUser.getRole().getName());
         }
-        int total = roleMapper.count(query);
+        long total = roleMapper.count(query);
         List<Role> roles = roleMapper.selectLimit(query);
         return new PageResult<>(total, roles);
     }

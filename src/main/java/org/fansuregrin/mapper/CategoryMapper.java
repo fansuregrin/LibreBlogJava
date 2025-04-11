@@ -13,7 +13,7 @@ public interface CategoryMapper {
 
     Category select(int id);
 
-    int count(CategoryQuery query);
+    long count(CategoryQuery query);
 
     List<Category> selectLimit(CategoryQuery query);
 

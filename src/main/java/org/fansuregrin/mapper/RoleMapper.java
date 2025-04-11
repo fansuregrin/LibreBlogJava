@@ -13,6 +13,6 @@ public interface RoleMapper {
 
     List<Role> selectLimit(RoleQuery query);
 
-    int count(RoleQuery query);
+    long count(RoleQuery query);
 
 }

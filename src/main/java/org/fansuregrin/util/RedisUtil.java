@@ -29,6 +29,15 @@ public class RedisUtil {
         return (T) redisTemplate.opsForValue().get(key);
     }
 
+    public long count(final String prefix) {
+        long c = -1;
+        ScanOptions options = ScanOptions.scanOptions().match(prefix + "*").build();
+        try (Cursor<String> cursor = redisTemplate.scan(options)) {
+             c = cursor.stream().count();
+        }
+        return c;
+    }
+
     public boolean expire(
         final String key, final long timeout, final TimeUnit timeUnit) {
         return redisTemplate.expire(key, timeout, timeUnit);

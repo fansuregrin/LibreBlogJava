@@ -3,6 +3,7 @@ package org.fansuregrin.service;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
+import org.fansuregrin.constant.Constants;
 import org.fansuregrin.entity.LoginInfo;
 import org.fansuregrin.exception.LoginException;
 import org.fansuregrin.util.JwtUtil;
@@ -19,7 +20,6 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class TokenService {
 
-    private static final String LOGIN_INFO_KEY_PREFIX = "loginInfo";
     private static final String TOKEN_PREFIX = "Bearer ";
     private static final long TOKEN_REFRESH_GAP = 600000;
 
@@ -43,7 +43,7 @@ public class TokenService {
     }
 
     public void removeLoginInfo(int uid) {
-        redisUtil.deleteWithPrefix(LOGIN_INFO_KEY_PREFIX + ":" + uid + ":");
+        redisUtil.deleteWithPrefix(Constants.LOGIN_INFO_REDIS_KEY_PREFIX + uid + ":");
     }
 
     public String createToken(LoginInfo loginInfo) {
@@ -104,7 +104,7 @@ public class TokenService {
     }
 
     private String getKey(int uid, String uuid) {
-        return LOGIN_INFO_KEY_PREFIX + ":" + uid  + ":" + uuid;
+        return Constants.LOGIN_INFO_REDIS_KEY_PREFIX + uid  + ":" + uuid;
     }
 
 }

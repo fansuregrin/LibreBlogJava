@@ -1,6 +1,7 @@
 package org.fansuregrin.service;
 
 import com.pig4cloud.captcha.SpecCaptcha;
+import org.fansuregrin.constant.Constants;
 import org.fansuregrin.entity.Captcha;
 import org.fansuregrin.util.RedisUtil;
 import org.springframework.stereotype.Service;
@@ -13,8 +14,6 @@ public class CaptchaService {
 
     private final RedisUtil redisUtil;
 
-    private static final String CAPTCHA_KEY_PREFIX = "libreblog:captcha:";
-
     public CaptchaService(RedisUtil redisUtil) {
         this.redisUtil = redisUtil;
     }
@@ -23,12 +22,12 @@ public class CaptchaService {
         SpecCaptcha specCaptcha = new SpecCaptcha(130, 48, 4);
         String verCode = specCaptcha.text().toLowerCase();
         String uuid = UUID.randomUUID().toString();
-        redisUtil.set(CAPTCHA_KEY_PREFIX + uuid, verCode, 3, TimeUnit.MINUTES);
+        redisUtil.set(Constants.CAPTCHA_REDIS_KEY_PREFIX + uuid, verCode, 3, TimeUnit.MINUTES);
         return new Captcha(specCaptcha.toBase64(), uuid);
     }
 
     public boolean verifyCaptcha(String uuid, String code) {
-        String verCode = redisUtil.get(CAPTCHA_KEY_PREFIX + uuid);
+        String verCode = redisUtil.get(Constants.CAPTCHA_REDIS_KEY_PREFIX + uuid);
         return verCode != null && verCode.equals(code.toLowerCase());
     }
 

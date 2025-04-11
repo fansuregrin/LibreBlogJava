@@ -34,7 +34,7 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     @PageCheck
     public PageResult<Article> list(ArticleQuery query) {
-        int total = articleMapper.count(query);
+        long total = articleMapper.count(query);
         List<Article> articles = articleMapper.selectLimit(query);
         return new PageResult<>(total, articles);
     }
@@ -55,7 +55,7 @@ public class ArticleServiceImpl implements ArticleService {
             User loginUser = UserUtil.getLoginUser();
             query.setAuthorId(loginUser.getId());
         }
-        int total = articleMapper.count(query);
+        long total = articleMapper.count(query);
         List<Article> articles = articleMapper.selectLimit(query);
         return new PageResult<>(total, articles);
     }
