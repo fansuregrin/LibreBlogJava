@@ -1,8 +1,8 @@
 package org.fansuregrin.service;
 
-import org.fansuregrin.entity.PageResult;
+import org.fansuregrin.dto.PageResult;
 import org.fansuregrin.entity.User;
-import org.fansuregrin.entity.UserQuery;
+import org.fansuregrin.dto.UserQuery;
 
 import java.util.List;
 

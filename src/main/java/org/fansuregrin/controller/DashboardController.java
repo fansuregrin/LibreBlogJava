@@ -1,7 +1,7 @@
 package org.fansuregrin.controller;
 
 import org.fansuregrin.dto.StatsInfo;
-import org.fansuregrin.entity.ApiResponse;
+import org.fansuregrin.dto.ApiResponse;
 import org.fansuregrin.service.impl.DashboardService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;

@@ -2,10 +2,10 @@ package org.fansuregrin.controller;
 
 import org.fansuregrin.annotation.MenuPermissionCheck;
 import org.fansuregrin.dto.CategoryArticleCount;
-import org.fansuregrin.entity.ApiResponse;
+import org.fansuregrin.dto.ApiResponse;
 import org.fansuregrin.entity.Category;
-import org.fansuregrin.entity.CategoryQuery;
-import org.fansuregrin.entity.PageResult;
+import org.fansuregrin.dto.CategoryQuery;
+import org.fansuregrin.dto.PageResult;
 import org.fansuregrin.service.ArticleService;
 import org.fansuregrin.service.CategoryService;
 import org.fansuregrin.validation.ValidateGroup;

@@ -3,7 +3,7 @@ package org.fansuregrin.handler;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
-import org.fansuregrin.entity.ApiResponse;
+import org.fansuregrin.dto.ApiResponse;
 import org.fansuregrin.exception.DuplicateResourceException;
 import org.fansuregrin.exception.LoginException;
 import org.fansuregrin.exception.PermissionException;

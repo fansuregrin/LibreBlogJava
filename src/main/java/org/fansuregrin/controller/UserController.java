@@ -1,6 +1,10 @@
 package org.fansuregrin.controller;
 
 import org.fansuregrin.annotation.MenuPermissionCheck;
+import org.fansuregrin.dto.ApiResponse;
+import org.fansuregrin.dto.Captcha;
+import org.fansuregrin.dto.PageResult;
+import org.fansuregrin.dto.UserQuery;
 import org.fansuregrin.entity.*;
 import org.fansuregrin.service.CaptchaService;
 import org.fansuregrin.service.TokenService;
@@ -12,7 +16,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 public class UserController {

@@ -1,6 +1,6 @@
 package org.fansuregrin.controller;
 
-import org.fansuregrin.entity.ApiResponse;
+import org.fansuregrin.dto.ApiResponse;
 import org.fansuregrin.service.OssService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

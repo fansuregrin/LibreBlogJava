@@ -3,6 +3,8 @@ package org.fansuregrin.service.impl;
 import org.fansuregrin.annotation.PageCheck;
 import org.fansuregrin.aop.PermissionAspect;
 import org.fansuregrin.constant.Constants;
+import org.fansuregrin.dto.PageResult;
+import org.fansuregrin.dto.UserQuery;
 import org.fansuregrin.entity.*;
 import org.fansuregrin.exception.DuplicateResourceException;
 import org.fansuregrin.exception.PermissionException;

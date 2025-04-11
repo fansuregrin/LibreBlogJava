@@ -2,6 +2,8 @@ package org.fansuregrin.service.impl;
 
 import org.fansuregrin.annotation.PageCheck;
 import org.fansuregrin.aop.PermissionAspect;
+import org.fansuregrin.dto.PageResult;
+import org.fansuregrin.dto.RoleQuery;
 import org.fansuregrin.entity.*;
 import org.fansuregrin.mapper.RoleMapper;
 import org.fansuregrin.service.RoleService;

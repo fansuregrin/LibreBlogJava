@@ -2,7 +2,7 @@ package org.fansuregrin.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.fansuregrin.entity.Tag;
-import org.fansuregrin.entity.TagQuery;
+import org.fansuregrin.dto.TagQuery;
 
 import java.util.List;
 

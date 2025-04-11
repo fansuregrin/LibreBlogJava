@@ -1,10 +1,10 @@
 package org.fansuregrin.controller;
 
 import org.fansuregrin.annotation.MenuPermissionCheck;
-import org.fansuregrin.entity.ApiResponse;
-import org.fansuregrin.entity.PageResult;
+import org.fansuregrin.dto.ApiResponse;
+import org.fansuregrin.dto.PageResult;
 import org.fansuregrin.entity.Role;
-import org.fansuregrin.entity.RoleQuery;
+import org.fansuregrin.dto.RoleQuery;
 import org.fansuregrin.service.RoleService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;

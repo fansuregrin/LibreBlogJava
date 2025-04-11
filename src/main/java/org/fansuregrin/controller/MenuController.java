@@ -1,7 +1,7 @@
 package org.fansuregrin.controller;
 
 import org.fansuregrin.annotation.MenuPermissionCheck;
-import org.fansuregrin.entity.ApiResponse;
+import org.fansuregrin.dto.ApiResponse;
 import org.fansuregrin.entity.Menu;
 import org.fansuregrin.service.MenuService;
 import org.springframework.web.bind.annotation.GetMapping;

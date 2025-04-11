@@ -1,4 +1,4 @@
-package org.fansuregrin.entity;
+package org.fansuregrin.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RoleQuery extends PageQuery {
-    private String name;
+public class ArticleQuery extends PageQuery {
+    private Integer authorId;
+    private String categorySlug;
+    private String tagSlug;
 }

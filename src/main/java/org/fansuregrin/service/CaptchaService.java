@@ -2,7 +2,7 @@ package org.fansuregrin.service;
 
 import com.pig4cloud.captcha.SpecCaptcha;
 import org.fansuregrin.constant.Constants;
-import org.fansuregrin.entity.Captcha;
+import org.fansuregrin.dto.Captcha;
 import org.fansuregrin.util.RedisUtil;
 import org.springframework.stereotype.Service;
 

@@ -2,7 +2,7 @@ package org.fansuregrin.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.fansuregrin.entity.Category;
-import org.fansuregrin.entity.CategoryQuery;
+import org.fansuregrin.dto.CategoryQuery;
 
 import java.util.List;
 

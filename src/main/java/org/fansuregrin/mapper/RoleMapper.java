@@ -2,7 +2,7 @@ package org.fansuregrin.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.fansuregrin.entity.Role;
-import org.fansuregrin.entity.RoleQuery;
+import org.fansuregrin.dto.RoleQuery;
 
 import java.util.List;
 

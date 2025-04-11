@@ -1,10 +1,10 @@
 package org.fansuregrin.controller;
 
 import org.fansuregrin.annotation.MenuPermissionCheck;
-import org.fansuregrin.entity.ApiResponse;
-import org.fansuregrin.entity.PageResult;
+import org.fansuregrin.dto.ApiResponse;
+import org.fansuregrin.dto.PageResult;
 import org.fansuregrin.entity.Tag;
-import org.fansuregrin.entity.TagQuery;
+import org.fansuregrin.dto.TagQuery;
 import org.fansuregrin.service.TagService;
 import org.fansuregrin.validation.ValidateGroup;
 import org.springframework.validation.annotation.Validated;

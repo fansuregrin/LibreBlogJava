@@ -1,8 +1,8 @@
 package org.fansuregrin.service;
 
-import org.fansuregrin.entity.PageResult;
+import org.fansuregrin.dto.PageResult;
 import org.fansuregrin.entity.Role;
-import org.fansuregrin.entity.RoleQuery;
+import org.fansuregrin.dto.RoleQuery;
 
 public interface RoleService {
 

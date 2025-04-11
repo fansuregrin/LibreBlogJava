@@ -2,7 +2,7 @@ package org.fansuregrin.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.fansuregrin.entity.User;
-import org.fansuregrin.entity.UserQuery;
+import org.fansuregrin.dto.UserQuery;
 
 import java.util.List;
 

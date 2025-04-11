@@ -1,4 +1,4 @@
-package org.fansuregrin.entity;
+package org.fansuregrin.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,8 +1,8 @@
 package org.fansuregrin.service;
 
 import org.fansuregrin.entity.Category;
-import org.fansuregrin.entity.CategoryQuery;
-import org.fansuregrin.entity.PageResult;
+import org.fansuregrin.dto.CategoryQuery;
+import org.fansuregrin.dto.PageResult;
 
 import java.util.List;
 

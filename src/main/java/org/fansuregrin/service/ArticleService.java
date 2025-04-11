@@ -1,6 +1,8 @@
 package org.fansuregrin.service;
 
+import org.fansuregrin.dto.ArticleQuery;
 import org.fansuregrin.dto.CategoryArticleCount;
+import org.fansuregrin.dto.PageResult;
 import org.fansuregrin.entity.*;
 
 import java.util.List;
