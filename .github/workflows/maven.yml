@@ -40,4 +40,6 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: Build with Maven
+      env:
+        TOKEN_SECRET: e9a4804b-6518-4223-9f21-4e7a9591616a
       run: mvn -B package --file pom.xml -Dspring.profiles.active=ci
